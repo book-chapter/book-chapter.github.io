@@ -1,5 +1,18 @@
 <?php
-session_start(); // Memulai session untuk mengecek status login
+session_start();
+include 'db.php';
+
+$chapter_id = $_GET['chapter_id'];
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $sql = "INSERT INTO orders (user_id, chapter_id, status) VALUES ('$user_id', '$chapter_id', 'pending')";
+    if ($conn->query($sql) === TRUE) {
+        header("Location: dashboard_upload_payment.php?order_id=" . $conn->insert_id);
+        exit();
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -144,7 +157,7 @@ session_start(); // Memulai session untuk mengecek status login
                         <h>Silakan lakukan pembayaran ke nomor rekening berikut: <br>
 
                             Bank ABC - 1234567890 (atas nama Book Chapter App)</h>
-                        <input type="submit" value="Konfirmasi Pembayaran" class="btn btn-primary btn-lg px-5">
+                        <br><br><input type="submit" value="Konfirmasi Pembayaran" class="btn btn-primary btn-lg px-5">
                     </div>
                 </div>
             </div>

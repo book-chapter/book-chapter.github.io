@@ -2,13 +2,6 @@
 session_start();
 include 'db.php';
 
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$user_id = $_SESSION['username'];
-
 // Mengambil daftar bab yang tersedia untuk dibeli
 $chapters = $conn->query("SELECT * FROM chapters");
 

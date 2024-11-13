@@ -1,5 +1,6 @@
 <?php
 session_start(); // Start session to check login status
+include 'db.php';
 ?>
 
 <!DOCTYPE html>

@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (password_verify($password, $user['password'])) {
       // Jika berhasil login, simpan informasi pengguna ke session
       $_SESSION['loggedin'] = true;
-      $_SESSION['username'] = $user['user'];
+      $_SESSION['username'] = $user['username'];
       header("Location: dashboard.php");
 
       // Menampilkan pesan sukses dan redirect ke halaman utama
