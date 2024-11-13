@@ -14,21 +14,21 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Cek koneksi
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+  die("Connection failed: " . $conn->connect_error);
 }
 
 ob_start(); // Memulai output buffering
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $full_name = $_POST['full_name'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $password2 = $_POST['password2'];
+  $username = $_POST['username'];
+  $full_name = $_POST['full_name'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $password2 = $_POST['password2'];
 
-    if ($password !== $password2) {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
+  if ($password !== $password2) {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
                 document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                       icon: 'error',
@@ -39,17 +39,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     });
                 });
               </script>";
-        exit();
-    }
+    exit();
+  }
 
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO users (username, full_name, password, email) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $username, $full_name, $hashed_password, $email);    
+  $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+  $sql = "INSERT INTO users (username, full_name, password, email) VALUES (?, ?, ?, ?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssss", $username, $full_name, $hashed_password, $email);
 
-    if ($stmt->execute()) {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
+  if ($stmt->execute()) {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
                 document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                       icon: 'success',
@@ -60,9 +60,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     });
                 });
               </script>";
-    } else {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
+  } else {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
                 document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                       icon: 'error',
@@ -73,11 +73,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     });
                 });
               </script>";
-    }
+  }
 
-    $stmt->close();
+  $stmt->close();
 }
 
 $conn->close();
 ob_end_flush(); // Akhiri output buffering
-?>
