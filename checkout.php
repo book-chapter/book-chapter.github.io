@@ -1,5 +1,5 @@
 <?php
-session_start(); // Start session to check login status
+session_start(); // Memulai session untuk mengecek status login
 ?>
 
 <!DOCTYPE html>
@@ -48,13 +48,11 @@ session_start(); // Start session to check login status
             <div class="site-mobile-menu-body"></div>
         </div>
 
+
         <div class="py-2 bg-light">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-9 d-none d-lg-block">
-                        <!-- <a href="#" class="small mr-3"><span class="icon-question-circle-o mr-2"></span> Have a questions?</a>
-            <a href="#" class="small mr-3"><span class="icon-phone2 mr-2"></span> 10 20 123 456</a>
-            <a href="#" class="small mr-3"><span class="icon-envelope-o mr-2"></span> info@mydomain.com</a> -->
                     </div>
                     <div class="col-lg-3 text-right">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
@@ -76,19 +74,19 @@ session_start(); // Start session to check login status
                 </div>
             </div>
         </div>
-
         <header class="site-navbar py-4 js-sticky-header site-navbar-target" role="banner">
 
             <div class="container">
                 <div class="d-flex align-items-center">
                     <div class="site-logo">
-                        <a href="dashboard.php" class="d-block">BookChapter.
+                        <a href="dashboard.php" class="d-block">
+                            BookChapter.
                         </a>
                     </div>
                     <div class="mr-auto">
                         <nav class="site-navigation position-relative text-right" role="navigation">
                             <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                                <li class="active">
+                                <li>
                                     <a href="dashboard.php" class="nav-link text-left">Beranda</a>
                                 </li>
                                 <li>
@@ -101,37 +99,57 @@ session_start(); // Start session to check login status
                         </nav>
 
                     </div>
+                    <div class="ml-auto">
+                        <div class="social-wrap">
+
+                            <a href="#" class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black"><span
+                                    class="icon-menu h3"></span></a>
+                        </div>
+                    </div>
 
                 </div>
             </div>
 
         </header>
 
-        <!-- Bagian konten utama -->
-        <div class="hero-slide owl-carousel site-blocks-cover">
-            <div class="intro-section" style="background-image: url('images/hero_1.jpg');">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
-                            <h1>Jelajahi Bab Buku Pilihan</h1>
-                            <p>Temukan bab buku berkualitas tanpa harus membeli keseluruhan buku. Akses pengetahuan dengan mudah dan praktis.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="intro-section" style="background-image: url('images/hero_2.jpg');">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
-                            <div class="intro">
-                                <h1>Beli Hanya yang Anda Butuhkan</h1>
-                                <p>Hemat waktu dan biaya dengan membeli bab-bab tertentu dari berbagai judul buku populer dan edukatif.</p>
-                            </div>
+
+        <div class="intro-section small" style="background-image: url('images/hero_2.jpg');">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
+                        <div class="intro">
+                            <h1>Checkout</h1>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+        <div class="site-section">
+            <div class="container">
+                <div class="row">
+
+                </div>
+                <div class="row">
+
+                </div>
+                <div class="row">
+
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <h>Silakan lakukan pembayaran ke nomor rekening berikut: <br>
+
+                            Bank ABC - 1234567890 (atas nama Book Chapter App)</h>
+                        <input type="submit" value="Konfirmasi Pembayaran" class="btn btn-primary btn-lg px-5">
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Footer -->
         <div class="footer">
@@ -152,7 +170,6 @@ session_start(); // Start session to check login status
                 </div>
             </div>
         </div>
-
 
     </div>
     <!-- .site-wrap -->
@@ -178,7 +195,12 @@ session_start(); // Start session to check login status
     <script src="js/jquery.fancybox.min.js"></script>
     <script src="js/jquery.sticky.js"></script>
     <script src="js/jquery.mb.YTPlayer.min.js"></script>
+
+
+
+
     <script src="js/main.js"></script>
+
 </body>
 
 </html>

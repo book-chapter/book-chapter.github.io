@@ -1,6 +1,8 @@
 <?php
-session_start(); // Memulai session untuk mengecek status login
+session_start(); // Memulai sesi
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -135,7 +137,7 @@ session_start(); // Memulai session untuk mengecek status login
                     <div class="col-lg-4 mb-5">
                         <div class="news-entry-item">
                             <a href="dashboard_bab_buku.php" class="thumbnail">
-                                <img src="images/img_1.jpg" alt="Image" class="img-fluid">
+                                <img src="images/img_2.jpg" alt="Image" class="img-fluid">
                                 <div class="date">
                                     <span>1</span>
                                 </div>
@@ -149,7 +151,7 @@ session_start(); // Memulai session untuk mengecek status login
                     <div class="col-lg-4 mb-5">
                         <div class="news-entry-item">
                             <a href="#" class="thumbnail">
-                                <img src="images/img_2.jpg" alt="Image" class="img-fluid">
+                                <img src="images/img_1.jpg" alt="Image" class="img-fluid">
                                 <div class="date">
                                     <span>2</span>
                                 </div>

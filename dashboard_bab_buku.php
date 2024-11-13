@@ -1,6 +1,20 @@
 <?php
-session_start(); // Start session to check login status
+session_start();
+include 'db.php';
 
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION['username'];
+
+// Mengambil daftar bab yang tersedia untuk dibeli
+$chapters = $conn->query("SELECT * FROM chapters");
+
+?>
+
+<?php
 // Database connection
 $servername = "localhost";
 $username = "root";
@@ -187,8 +201,10 @@ $result = $conn->query($sql);
                                             <p><strong>Dibuat pada:</strong> <?php echo date("d M Y", strtotime($row['created_at'])); ?></p>
                                         </div>
                                         <div class="modal-footer">
+                                            <a href="checkout.php?chapter_id=<?php echo $row['chapter_id']; ?>" class="btn btn-primary">Checkout</a>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

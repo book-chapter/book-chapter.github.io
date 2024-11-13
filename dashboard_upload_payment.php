@@ -1,5 +1,41 @@
 <?php
-session_start(); // Start session to check login status
+session_start();
+include 'db.php';
+
+if (!isset($_SESSION['user_id']) || !isset($_GET['order_id'])) {
+    header("Location: login.html");
+    exit();
+}
+
+$order_id = $_GET['order_id'];
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $allowed_types = ['png', 'jpg', 'jpeg'];
+    $file_name = basename($_FILES['payment_proof']['name']);
+    $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    $upload_dir = 'uploads/';
+    $payment_proof_path = $upload_dir . $file_name;
+
+    if (in_array($file_type, $allowed_types)) {
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        if (move_uploaded_file($_FILES['payment_proof']['tmp_name'], $payment_proof_path)) {
+            $sql = "UPDATE orders SET payment_proof_path = '$payment_proof_path', status = 'waiting_confirmation' WHERE order_id = '$order_id'";
+            if ($conn->query($sql) === TRUE) {
+                header("Location: dashboard_pending_confirmation.php");
+                exit();
+            } else {
+                echo "Error: " . $conn->error;
+            }
+        } else {
+            echo "Failed to upload file. Please check folder permissions.";
+        }
+    } else {
+        echo "Only PNG, JPG, and JPEG files are allowed.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -48,13 +84,11 @@ session_start(); // Start session to check login status
             <div class="site-mobile-menu-body"></div>
         </div>
 
+
         <div class="py-2 bg-light">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-9 d-none d-lg-block">
-                        <!-- <a href="#" class="small mr-3"><span class="icon-question-circle-o mr-2"></span> Have a questions?</a>
-            <a href="#" class="small mr-3"><span class="icon-phone2 mr-2"></span> 10 20 123 456</a>
-            <a href="#" class="small mr-3"><span class="icon-envelope-o mr-2"></span> info@mydomain.com</a> -->
                     </div>
                     <div class="col-lg-3 text-right">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
@@ -76,19 +110,19 @@ session_start(); // Start session to check login status
                 </div>
             </div>
         </div>
-
         <header class="site-navbar py-4 js-sticky-header site-navbar-target" role="banner">
 
             <div class="container">
                 <div class="d-flex align-items-center">
                     <div class="site-logo">
-                        <a href="dashboard.php" class="d-block">BookChapter.
+                        <a href="dashboard.php" class="d-block">
+                            BookChapter.
                         </a>
                     </div>
                     <div class="mr-auto">
                         <nav class="site-navigation position-relative text-right" role="navigation">
                             <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                                <li class="active">
+                                <li>
                                     <a href="dashboard.php" class="nav-link text-left">Beranda</a>
                                 </li>
                                 <li>
@@ -101,37 +135,58 @@ session_start(); // Start session to check login status
                         </nav>
 
                     </div>
+                    <div class="ml-auto">
+                        <div class="social-wrap">
+
+                            <a href="#" class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black"><span
+                                    class="icon-menu h3"></span></a>
+                        </div>
+                    </div>
 
                 </div>
             </div>
 
         </header>
 
-        <!-- Bagian konten utama -->
-        <div class="hero-slide owl-carousel site-blocks-cover">
-            <div class="intro-section" style="background-image: url('images/hero_1.jpg');">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
-                            <h1>Jelajahi Bab Buku Pilihan</h1>
-                            <p>Temukan bab buku berkualitas tanpa harus membeli keseluruhan buku. Akses pengetahuan dengan mudah dan praktis.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="intro-section" style="background-image: url('images/hero_2.jpg');">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
-                            <div class="intro">
-                                <h1>Beli Hanya yang Anda Butuhkan</h1>
-                                <p>Hemat waktu dan biaya dengan membeli bab-bab tertentu dari berbagai judul buku populer dan edukatif.</p>
-                            </div>
+
+        <div class="intro-section small" style="background-image: url('images/hero_2.jpg');">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
+                        <div class="intro">
+                            <h1>Upload Bukti Pembayaran</h1>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+        <div class="site-section">
+            <div class="container">
+                <div class="row">
+
+                </div>
+                <div class="row">
+
+                </div>
+                <div class="row">
+
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <form method="POST" enctype="multipart/form-data">
+                            Upload Bukti Pembayaran (PNG, JPG, JPEG): <input type="file" name="payment_proof" required><br><br>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        <!-- <a href="dashboard_bab_buku.php" class="btn btn-danger">Kembali</a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Footer -->
         <div class="footer">
@@ -152,7 +207,6 @@ session_start(); // Start session to check login status
                 </div>
             </div>
         </div>
-
 
     </div>
     <!-- .site-wrap -->
@@ -178,7 +232,12 @@ session_start(); // Start session to check login status
     <script src="js/jquery.fancybox.min.js"></script>
     <script src="js/jquery.sticky.js"></script>
     <script src="js/jquery.mb.YTPlayer.min.js"></script>
+
+
+
+
     <script src="js/main.js"></script>
+
 </body>
 
 </html>

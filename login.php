@@ -33,7 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (password_verify($password, $user['password'])) {
       // Jika berhasil login, simpan informasi pengguna ke session
       $_SESSION['loggedin'] = true;
-      $_SESSION['username'] = $user['username'];
+      $_SESSION['username'] = $user['user'];
+      header("Location: dashboard.php");
 
       // Menampilkan pesan sukses dan redirect ke halaman utama
       echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
