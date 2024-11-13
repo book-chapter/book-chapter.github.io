@@ -95,13 +95,7 @@ session_start(); // Memulai session untuk mengecek status login
                   <a href="about.php" class="nav-link text-left">Tentang</a>
                 </li>
                 <li>
-                  <a href="book.php" class="nav-link text-left">Buku</a>
-                </li>
-                <li>
                   <a href="services.php" class="nav-link text-left">Layanan</a>
-                </li>
-                <li>
-                  <a href="blog.php" class="nav-link text-left">Blog</a>
                 </li>
                 <li>
                   <a href="contact.php" class="nav-link text-left">Hubungi Kami</a>
