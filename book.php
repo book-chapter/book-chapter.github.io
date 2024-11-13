@@ -65,7 +65,7 @@ session_start(); // Memulai session untuk mengecek status login
                     <?php echo htmlspecialchars($_SESSION['username']); ?>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="accountDropdown">
-                    <a class="dropdown-item" href="/php/logout.php">Logout</a>
+                    <a class="dropdown-item" href="logout.php">Logout</a>
                     </div>
                 </div>
                 <?php else: ?>
