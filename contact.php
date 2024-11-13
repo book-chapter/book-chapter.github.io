@@ -82,7 +82,7 @@ session_start(); // Memulai session untuk mengecek status login
       <div class="container">
         <div class="d-flex align-items-center">
           <div class="site-logo">
-            <a href="index.html" class="d-block">
+            <a href="index.php" class="d-block">
               <img src="images/logo.png" alt="Image" class="img-fluid">
             </a>
           </div>
