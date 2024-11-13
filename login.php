@@ -5,7 +5,7 @@ session_start(); // Mulai sesi
 $servername = "localhost";
 $username = "root";
 $password = ""; // Ganti dengan password MySQL Anda jika ada
-$dbname = "book-chapter"; // Nama database
+$dbname = "book_chapter"; // Nama database
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
