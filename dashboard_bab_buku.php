@@ -1,5 +1,22 @@
 <?php
-session_start(); // Memulai session untuk mengecek status login
+session_start(); // Start session to check login status
+
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = ""; // Use your MySQL password if any
+$dbname = "book_chapter"; // Ensure this matches your database name
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Pastikan mengambil kolom image_path
+$sql = "SELECT chapter_id, title, description, price, file_path, image_path, created_at FROM chapters ORDER BY created_at DESC";
+$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -39,6 +56,7 @@ session_start(); // Memulai session untuk mengecek status login
 
     <div class="site-wrap">
 
+        <!-- Header and Navigation Code Here -->
         <div class="site-mobile-menu site-navbar-target">
             <div class="site-mobile-menu-header">
                 <div class="site-mobile-menu-close mt-3">
@@ -113,7 +131,6 @@ session_start(); // Memulai session untuk mengecek status login
 
         </header>
 
-
         <div class="intro-section small" style="background-image: url('images/hero_1.jpg');">
             <div class="container">
                 <div class="row align-items-center justify-content-center">
@@ -127,114 +144,63 @@ session_start(); // Memulai session untuk mengecek status login
             </div>
         </div>
 
-
         <div class="site-section pb-0">
             <div class="container">
-
                 <div class="row">
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="#" class="thumbnail">
-                                <img src="images/img_1.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>3</span>
-                                    <span>July</span>
+                    <?php if ($result->num_rows > 0): ?>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <div class="col-lg-4 mb-5">
+                                <div class="news-entry-item">
+                                    <!-- Menampilkan gambar atau gambar default -->
+                                    <?php
+                                    $imagePath = !empty($row['image_path']) && file_exists("Admin/" . $row['image_path'])
+                                        ? "Admin/" . $row['image_path']
+                                        : 'images/default_img.jpg';
+                                    ?>
+                                    <a href="#" class="thumbnail" data-toggle="modal" data-target="#chapterModal<?php echo $row['chapter_id']; ?>">
+                                        <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Image" class="img-fluid">
+                                        <div class="date">
+                                            <span><?php echo date("j", strtotime($row['created_at'])); ?></span>
+                                            <span><?php echo date("M", strtotime($row['created_at'])); ?></span>
+                                        </div>
+                                    </a>
+                                    <h3 class="mb-0"><a href="#"><?php echo htmlspecialchars($row['title']); ?></a></h3>
+                                    <p><strong>Harga: </strong>Rp <?php echo number_format($row['price'], 2, ',', '.'); ?></p>
                                 </div>
-                            </a>
-                            <h3 class="mb-0"><a href="#">Enim Ducimus molestiae digniss sunt</a></h3>
-                            <div class="mb-3">
-                                by <a href="#">Craig Smith</a> at Colorlib
                             </div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio minus maiores, neque repellendus molestias! Odio voluptas, et fuga. Quae, animi.</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="#" class="thumbnail">
-                                <img src="images/img_2.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>3</span>
-                                    <span>July</span>
-                                </div>
-                            </a>
-                            <h3 class="mb-0"><a href="#">Enim Ducimus molestiae digniss sunt</a></h3>
-                            <div class="mb-3">
-                                by <a href="#">Craig Smith</a> at Colorlib
-                            </div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio minus maiores, neque repellendus molestias! Odio voluptas, et fuga. Quae, animi.</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="#" class="thumbnail">
-                                <img src="images/img_3.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>3</span>
-                                    <span>July</span>
-                                </div>
-                            </a>
-                            <h3 class="mb-0"><a href="#">Enim Ducimus molestiae digniss sunt</a></h3>
-                            <div class="mb-3">
-                                by <a href="#">Craig Smith</a> at Colorlib
-                            </div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio minus maiores, neque repellendus molestias! Odio voluptas, et fuga. Quae, animi.</p>
-                        </div>
-                    </div>
 
-
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="#" class="thumbnail">
-                                <img src="images/img_1.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>3</span>
-                                    <span>July</span>
+                            <!-- Modal untuk detail bab buku -->
+                            <div class="modal fade" id="chapterModal<?php echo $row['chapter_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="chapterModalLabel<?php echo $row['chapter_id']; ?>" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="chapterModalLabel<?php echo $row['chapter_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Image" class="img-fluid mb-3">
+                                            <p><strong>Deskripsi:</strong></p>
+                                            <p><?php echo nl2br(htmlspecialchars($row['description'])); ?></p>
+                                            <p><strong>Harga:</strong> Rp <?php echo number_format($row['price'], 2, ',', '.'); ?></p>
+                                            <p><strong>Dibuat pada:</strong> <?php echo date("d M Y", strtotime($row['created_at'])); ?></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </a>
-                            <h3 class="mb-0"><a href="#">Enim Ducimus molestiae digniss sunt</a></h3>
-                            <div class="mb-3">
-                                by <a href="#">Craig Smith</a> at Colorlib
                             </div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio minus maiores, neque repellendus molestias! Odio voluptas, et fuga. Quae, animi.</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="#" class="thumbnail">
-                                <img src="images/img_2.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>3</span>
-                                    <span>July</span>
-                                </div>
-                            </a>
-                            <h3 class="mb-0"><a href="#">Enim Ducimus molestiae digniss sunt</a></h3>
-                            <div class="mb-3">
-                                by <a href="#">Craig Smith</a> at Colorlib
-                            </div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio minus maiores, neque repellendus molestias! Odio voluptas, et fuga. Quae, animi.</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="#" class="thumbnail">
-                                <img src="images/img_3.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>3</span>
-                                    <span>July</span>
-                                </div>
-                            </a>
-                            <h3 class="mb-0"><a href="#">Enim Ducimus molestiae digniss sunt</a></h3>
-                            <div class="mb-3">
-                                by <a href="#">Craig Smith</a> at Colorlib
-                            </div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio minus maiores, neque repellendus molestias! Odio voluptas, et fuga. Quae, animi.</p>
-                        </div>
-                    </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="text-center">Tidak ada bab buku yang tersedia saat ini.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer Code Here -->
         <div class="footer">
             <div class="container">
                 <div class="row">
@@ -254,17 +220,11 @@ session_start(); // Memulai session untuk mengecek status login
             </div>
         </div>
 
-
     </div>
-    <!-- .site-wrap -->
 
-
-    <!-- loader -->
-    <div id="loader" class="show fullscreen"><svg class="circular" width="48px" height="48px">
-            <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
-            <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#51be78" />
-        </svg></div>
-
+    <!-- jQuery, Bootstrap, and other JavaScript files -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/jquery-migrate-3.0.1.min.js"></script>
     <script src="js/jquery-ui.js"></script>
@@ -283,7 +243,10 @@ session_start(); // Memulai session untuk mengecek status login
 
 
     <script src="js/main.js"></script>
-
 </body>
 
 </html>
+
+<?php
+$conn->close();
+?>
