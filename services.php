@@ -123,7 +123,7 @@ session_start(); // Memulai session untuk mengecek status login
             <div class="intro">
               <h1>Layanan</h1>
               <p>Jelajahi Koleksi Bab Buku Berkualitas</p>
-              <p><a href="#" class="btn btn-primary">Mulai Sekarang</a></p>
+              <p><a href="login.html" class="btn btn-primary">Mulai Sekarang</a></p>
             </div>
           </div>
         </div>

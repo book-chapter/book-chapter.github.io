@@ -48,13 +48,11 @@ session_start(); // Memulai session untuk mengecek status login
             <div class="site-mobile-menu-body"></div>
         </div>
 
+
         <div class="py-2 bg-light">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-9 d-none d-lg-block">
-                        <!-- <a href="#" class="small mr-3"><span class="icon-question-circle-o mr-2"></span> Have a questions?</a>
-            <a href="#" class="small mr-3"><span class="icon-phone2 mr-2"></span> 10 20 123 456</a>
-            <a href="#" class="small mr-3"><span class="icon-envelope-o mr-2"></span> info@mydomain.com</a> -->
                     </div>
                     <div class="col-lg-3 text-right">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
@@ -82,16 +80,17 @@ session_start(); // Memulai session untuk mengecek status login
             <div class="container">
                 <div class="d-flex align-items-center">
                     <div class="site-logo">
-                        <a href="index.php" class="d-block">BookChapter.
+                        <a href="dashboard.php" class="d-block">
+                            BookChapter.
                         </a>
                     </div>
                     <div class="mr-auto">
                         <nav class="site-navigation position-relative text-right" role="navigation">
                             <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                                <li class="active">
+                                <li>
                                     <a href="dashboard.php" class="nav-link text-left">Beranda</a>
                                 </li>
-                                <li>
+                                <li class="active">
                                     <a href="dashboard_buku.php" class="nav-link text-left">Buku</a>
                                 </li>
                                 <li>
@@ -101,32 +100,78 @@ session_start(); // Memulai session untuk mengecek status login
                         </nav>
 
                     </div>
+                    <div class="ml-auto">
+                        <div class="social-wrap">
+
+                            <a href="#" class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black"><span
+                                    class="icon-menu h3"></span></a>
+                        </div>
+                    </div>
 
                 </div>
             </div>
 
         </header>
 
-        <!-- Bagian konten utama -->
-        <div class="hero-slide owl-carousel site-blocks-cover">
-            <div class="intro-section" style="background-image: url('images/hero_1.jpg');">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
-                            <h1>Jelajahi Bab Buku Pilihan</h1>
-                            <p>Temukan bab buku berkualitas tanpa harus membeli keseluruhan buku. Akses pengetahuan dengan mudah dan praktis.</p>
+
+        <div class="intro-section small" style="background-image: url('images/hero_1.jpg');">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
+                        <div class="intro">
+                            <h1>Temukan Bab Buku</h1><br>
+                            <p>Temukan berbagai buku dan bab berkualitas sesuai kebutuhan Anda di BookChapter. Mulai eksplorasi pengetahuan sekarang!</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="intro-section" style="background-image: url('images/hero_2.jpg');">
-                <div class="container">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
-                            <div class="intro">
-                                <h1>Beli Hanya yang Anda Butuhkan</h1>
-                                <p>Hemat waktu dan biaya dengan membeli bab-bab tertentu dari berbagai judul buku populer dan edukatif.</p>
+        </div>
+
+
+        <div class="site-section pb-0">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-lg-4 mb-5">
+                        <div class="news-entry-item">
+                            <a href="dashboard_bab_buku.php" class="thumbnail">
+                                <img src="images/img_1.jpg" alt="Image" class="img-fluid">
+                                <div class="date">
+                                    <span>1</span>
+                                </div>
+                            </a>
+                            <h3 class="mb-0"><a href="dashboard_bab_buku.php">Daftar Bab Buku</a></h3>
+                            <div class="mb-3">
                             </div>
+                            <p>Temukan berbagai bab buku dari beragam topik. Pilih bab yang sesuai kebutuhan Anda untuk memulai pembelajaran yang lebih fokus.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-5">
+                        <div class="news-entry-item">
+                            <a href="#" class="thumbnail">
+                                <img src="images/img_2.jpg" alt="Image" class="img-fluid">
+                                <div class="date">
+                                    <span>2</span>
+                                </div>
+                            </a>
+                            <h3 class="mb-0"><a href="#">Bab Buku yang sudah Dibeli</a></h3>
+                            <div class="mb-3">
+                            </div>
+                            <p>Akses bab-bab yang sudah Anda beli kapan saja. Semua tersedia di satu tempat untuk kemudahan Anda.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-5">
+                        <div class="news-entry-item">
+                            <a href="#" class="thumbnail">
+                                <img src="images/img_3.jpg" alt="Image" class="img-fluid">
+                                <div class="date">
+                                    <span>3</span>
+                                </div>
+                            </a>
+                            <h3 class="mb-0"><a href="#">Upload Hasil Pengerjaan Bab Buku</a></h3>
+                            <div class="mb-3">
+                            </div>
+                            <p>Unggah hasil pengerjaan atau catatan dari bab yang Anda pelajari untuk referensi atau penyimpanan.</p>
                         </div>
                     </div>
                 </div>
@@ -178,7 +223,11 @@ session_start(); // Memulai session untuk mengecek status login
     <script src="js/jquery.fancybox.min.js"></script>
     <script src="js/jquery.sticky.js"></script>
     <script src="js/jquery.mb.YTPlayer.min.js"></script>
+    <script src="js/project-navigation.js"></script>
+
+
     <script src="js/main.js"></script>
+
 </body>
 
 </html>

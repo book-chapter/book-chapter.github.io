@@ -79,7 +79,7 @@ session_start(); // Memulai session untuk mengecek status login
       <div class="container">
         <div class="d-flex align-items-center">
           <div class="site-logo">
-            <a href="index.php" class="d-block">
+            <a href="dashboard.php" class="d-block">
               BookChapter.
             </a>
           </div>
@@ -87,16 +87,13 @@ session_start(); // Memulai session untuk mengecek status login
             <nav class="site-navigation position-relative text-right" role="navigation">
               <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
                 <li>
-                  <a href="index.php" class="nav-link text-left">Beranda</a>
+                  <a href="dashboard.php" class="nav-link text-left">Beranda</a>
                 </li>
                 <li>
-                  <a href="about.php" class="nav-link text-left">Tentang</a>
-                </li>
-                <li>
-                  <a href="services.php" class="nav-link text-left">Layanan</a>
+                  <a href="dashboard_buku.php" class="nav-link text-left">Buku</a>
                 </li>
                 <li class="active">
-                  <a href="contact.php" class="nav-link text-left">Hubungi Kami</a>
+                  <a href="dashboard_kontak.php" class="nav-link text-left">Bantuan</a>
                 </li>
               </ul>
             </nav>
@@ -121,9 +118,8 @@ session_start(); // Memulai session untuk mengecek status login
         <div class="row align-items-center justify-content-center">
           <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
             <div class="intro">
-              <h1>Hubungi Kami</h1>
+              <h1>Butuh Bantuan</h1>
               <p>"Tertarik bekerja sama atau punya pertanyaan? Hubungi kami untuk bantuan dan informasi lebih lanjut."</p>
-              <p><a href="login.html" class="btn btn-primary">Mulai Sekarang</a></p>
             </div>
           </div>
         </div>
