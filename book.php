@@ -258,8 +258,6 @@ session_start(); // Memulai session untuk mengecek status login
         <script src="js/project-navigation.js"></script>
 
 
-
-
         <script src="js/main.js"></script>
 
     </body>
