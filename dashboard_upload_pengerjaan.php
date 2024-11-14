@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,36 +18,23 @@ $user_id = $_SESSION['user_id'];
     <title>BookKeeping &mdash; Website by Colorlib</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
     <link href="https://fonts.googleapis.com/css?family=Muli:300,400,700,900" rel="stylesheet">
     <link rel="stylesheet" href="fonts/icomoon/style.css">
-
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/owl.theme.default.min.css">
-
     <link rel="stylesheet" href="css/jquery.fancybox.min.css">
-
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
-
     <link rel="stylesheet" href="fonts/flaticon/font/flaticon.css">
-
     <link rel="stylesheet" href="css/aos.css">
     <link href="css/jquery.mb.YTPlayer.min.css" media="all" rel="stylesheet" type="text/css">
-
     <link rel="stylesheet" href="css/style.css">
-
-
-
 </head>
 
 <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
 
     <div class="site-wrap">
-
         <div class="site-mobile-menu site-navbar-target">
             <div class="site-mobile-menu-header">
                 <div class="site-mobile-menu-close mt-3">
@@ -58,15 +44,12 @@ $user_id = $_SESSION['user_id'];
             <div class="site-mobile-menu-body"></div>
         </div>
 
-
         <div class="py-2 bg-light">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-lg-9 d-none d-lg-block">
-                    </div>
+                    <div class="col-lg-9 d-none d-lg-block"></div>
                     <div class="col-lg-3 text-right">
                         <?php if (isset($_SESSION['user_id'])): ?>
-                            <!-- Jika sudah login, tampilkan nama pengguna dan opsi logout -->
                             <div class="dropdown">
                                 <a href="#" class="small btn btn-primary px-4 py-2 rounded-0 dropdown-toggle" id="accountDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <?php echo htmlspecialchars($_SESSION['username']); ?>
@@ -76,7 +59,6 @@ $user_id = $_SESSION['user_id'];
                                 </div>
                             </div>
                         <?php else: ?>
-                            <!-- Jika belum login, tampilkan tombol login dan register -->
                             <a href="login.html" class="small mr-3"><span class="icon-unlock-alt"></span> Log In</a>
                             <a href="register.html" class="small btn btn-primary px-4 py-2 rounded-0"><span class="icon-users"></span> Register</a>
                         <?php endif; ?>
@@ -86,107 +68,85 @@ $user_id = $_SESSION['user_id'];
         </div>
 
         <header class="site-navbar py-4 js-sticky-header site-navbar-target" role="banner">
-
             <div class="container">
                 <div class="d-flex align-items-center">
                     <div class="site-logo">
-                        <a href="dashboard.php" class="d-block">
-                            BookChapter.
-                        </a>
+                        <a href="dashboard.php" class="d-block">BookChapter.</a>
                     </div>
                     <div class="mr-auto">
                         <nav class="site-navigation position-relative text-right" role="navigation">
                             <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                                <li>
-                                    <a href="dashboard.php" class="nav-link text-left">Beranda</a>
-                                </li>
-                                <li class="active">
-                                    <a href="dashboard_buku.php" class="nav-link text-left">Buku</a>
-                                </li>
-                                <li>
-                                    <a href="dashboard_kontak.php" class="nav-link text-left">Bantuan</a>
-                                </li>
+                                <li><a href="dashboard.php" class="nav-link text-left">Beranda</a></li>
+                                <li class="active"><a href="dashboard_buku.php" class="nav-link text-left">Buku</a></li>
+                                <li><a href="dashboard_kontak.php" class="nav-link text-left">Bantuan</a></li>
                             </ul>
                         </nav>
-
                     </div>
-                    <div class="ml-auto">
-                        <div class="social-wrap">
-
-                            <a href="#" class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black"><span
-                                    class="icon-menu h3"></span></a>
-                        </div>
-                    </div>
-
                 </div>
             </div>
-
         </header>
-
 
         <div class="intro-section small" style="background-image: url('images/hero_1.jpg');">
             <div class="container">
                 <div class="row align-items-center justify-content-center">
                     <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
                         <div class="intro">
-                            <h1>Temukan Bab Buku</h1><br>
-                            <p>Temukan berbagai buku dan bab berkualitas sesuai kebutuhan Anda di BookChapter. Mulai eksplorasi pengetahuan sekarang!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="site-section pb-0">
-            <div class="container">
-
-                <div class="row">
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="dashboard_bab_buku.php" class="thumbnail">
-                                <img src="images/img_2.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>1</span>
-                                </div>
-                            </a>
-                            <h3 class="mb-0"><a href="dashboard_bab_buku.php">Daftar Bab Buku</a></h3>
-                            <div class="mb-3">
-                            </div>
-                            <p>Temukan berbagai bab buku dari beragam topik. Pilih bab yang sesuai kebutuhan Anda untuk memulai pembelajaran yang lebih fokus.</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="dashboard_buku_dibeli.php" class="thumbnail">
-                                <img src="images/img_1.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>2</span>
-                                </div>
-                            </a>
-                            <h3 class="mb-0"><a href="dashboard_buku_dibeli.php">Bab Buku yang sudah Dibeli</a></h3>
-                            <div class="mb-3">
-                            </div>
-                            <p>Akses bab-bab yang sudah Anda beli kapan saja. Semua tersedia di satu tempat untuk kemudahan Anda.</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mb-5">
-                        <div class="news-entry-item">
-                            <a href="dashboard_upload_pengerjaan.php" class="thumbnail">
-                                <img src="images/img_3.jpg" alt="Image" class="img-fluid">
-                                <div class="date">
-                                    <span>3</span>
-                                </div>
-                            </a>
-                            <h3 class="mb-0"><a href="dashboard_upload_pengerjaan.php">Upload Hasil Pengerjaan Bab Buku</a></h3>
-                            <div class="mb-3">
-                            </div>
+                            <h1>Upload Hasil Pengerjaan Bab Buku</h1><br>
                             <p>Unggah hasil pengerjaan atau catatan dari bab yang Anda pelajari untuk referensi atau penyimpanan.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="site-section pb-0 table-responsive">
+            <div class="container">
+                <h2 class="text-center">Upload Hasil Pengerjaan Bab Buku</h2>
+                <p class="text-center">Jika Anda sudah selesai mengerjakan bab buku, unggah hasilnya di sini:</p>
+
+                <?php
+                // Mengambil daftar bab yang sudah dibayar untuk diunggah hasilnya
+                $completed_orders = $conn->query("SELECT orders.order_id, chapters.title 
+                                          FROM orders 
+                                          JOIN chapters ON orders.chapter_id = chapters.chapter_id 
+                                          WHERE orders.user_id = '$user_id' AND orders.status = 'approved'");
+                ?>
+
+                <?php if ($completed_orders->num_rows > 0): ?>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Judul Bab</th>
+                                <th scope="col" class="text-right">Upload Hasil</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $i = 1; ?>
+                            <?php while ($order = $completed_orders->fetch_assoc()): ?>
+                                <tr>
+                                    <td class="align-middle"><?= $i++ ?></td>
+                                    <td class="align-middle"><?= htmlspecialchars($order['title']) ?></td>
+                                    <td class="align-middle">
+                                        <form method="POST" action="upload_completed_chapter.php" enctype="multipart/form-data" class="d-flex justify-content-between align-items-center">
+                                            <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
+                                            <input type="file" name="completed_chapter" class="form-control-file" style="flex: 1; margin-right: 10px;" required>
+                                            <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+
+
+                <?php else: ?>
+                    <p class="text-center">Tidak ada bab yang dapat diunggah hasil pengerjaannya.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+
+
 
         <!-- Footer -->
         <div class="footer">
@@ -196,28 +156,24 @@ $user_id = $_SESSION['user_id'];
                         <div class="copyright">
                             <p>
                                 <a href="#" class="d-block" style="text-decoration: none;">
-                                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                                     Copyright &copy;<script>
                                         document.write(new Date().getFullYear());
-                                    </script> All rights reserved | BookChapter.</a>
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                    </script> All rights reserved | BookChapter.
+                                </a>
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-
     </div>
-    <!-- .site-wrap -->
 
-
-    <!-- loader -->
-    <div id="loader" class="show fullscreen"><svg class="circular" width="48px" height="48px">
+    <div id="loader" class="show fullscreen">
+        <svg class="circular" width="48px" height="48px">
             <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
             <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#51be78" />
-        </svg></div>
+        </svg>
+    </div>
 
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/jquery-migrate-3.0.1.min.js"></script>
@@ -234,10 +190,7 @@ $user_id = $_SESSION['user_id'];
     <script src="js/jquery.sticky.js"></script>
     <script src="js/jquery.mb.YTPlayer.min.js"></script>
     <script src="js/project-navigation.js"></script>
-
-
     <script src="js/main.js"></script>
-
 </body>
 
 </html>
