@@ -102,7 +102,7 @@ $user_id = $_SESSION['user_id'];
         <div class="site-section pb-0 table-responsive">
             <div class="container">
                 <h2 class="text-center">Upload Hasil Pengerjaan Bab Buku</h2>
-                <p class="text-center">Jika Anda sudah selesai mengerjakan bab buku, unggah hasilnya di sini:</p>
+                <p class="text-center">Jika Anda sudah selesai mengerjakan bab buku, unggah hasilnya di sini:</p> <br>
 
                 <?php
                 // Mengambil daftar bab yang sudah dibayar untuk diunggah hasilnya
@@ -116,8 +116,8 @@ $user_id = $_SESSION['user_id'];
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Judul Bab</th>
+                                <th scope="col" class="text-center">No</th>
+                                <th scope="col" class="text-center">Judul Bab</th>
                                 <th scope="col" class="text-right">Upload Hasil</th>
                             </tr>
                         </thead>
@@ -125,8 +125,8 @@ $user_id = $_SESSION['user_id'];
                             <?php $i = 1; ?>
                             <?php while ($order = $completed_orders->fetch_assoc()): ?>
                                 <tr>
-                                    <td class="align-middle"><?= $i++ ?></td>
-                                    <td class="align-middle"><?= htmlspecialchars($order['title']) ?></td>
+                                    <td class="align-middle text-center"><?= $i++ ?></td>
+                                    <td class="align-middle text-center"><?= htmlspecialchars($order['title']) ?></td>
                                     <td class="align-middle">
                                         <form method="POST" action="upload_completed_chapter.php" enctype="multipart/form-data" class="d-flex justify-content-between align-items-center">
                                             <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">

@@ -30,6 +30,7 @@ $user_id = $_SESSION['user_id'];
     <link rel="stylesheet" href="css/aos.css">
     <link href="css/jquery.mb.YTPlayer.min.css" media="all" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
@@ -100,8 +101,8 @@ $user_id = $_SESSION['user_id'];
 
         <div class="site-section pb-0">
             <div class="container">
-                <h2>Bab yang Sudah Dibeli</h2>
-                <p>Anda dapat mengunduh bab buku yang sudah dibayar di sini:</p>
+                <h2 class="text-center">Bab yang Sudah Dibeli</h2>
+                <p class="text-center">Anda dapat mengunduh bab buku yang sudah dibayar di sini:</p> <br>
 
                 <?php
                 // Mengambil daftar bab yang sudah dibayar (status 'approved')
@@ -112,30 +113,31 @@ $user_id = $_SESSION['user_id'];
                 ?>
 
                 <?php if ($orders->num_rows > 0): ?>
-                    <table class="table">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Judul bab</th>
-                                <th scope="col">Aksi</th>
+                                <th scope="col" class="text-center">No</th>
+                                <th scope="col" class="text-center">Judul bab</th>
+                                <th scope="col" class="text-center">Aksi</th> <!-- Gunakan text-right dan lebar proporsional -->
                             </tr>
                         </thead>
                         <tbody>
                             <?php $i = 1; ?>
                             <?php while ($order = $orders->fetch_assoc()): ?>
                                 <tr>
-                                    <td><?= $i++ ?></td>
-                                    <td><?= htmlspecialchars($order['title']) ?></td>
-                                    <td>
+                                    <td class="align-middle text-center"><?= $i++ ?></td>
+                                    <td class="align-middle text-center"><?= htmlspecialchars($order['title']) ?></td>
+                                    <td class="align-middle text-center">
                                         <a href="<?= htmlspecialchars($order['file_path']) ?>" class="btn btn-primary btn-sm" download>Unduh Bab Buku</a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         </tbody>
-                    <?php else: ?>
-                        <p style="color: black;">Belum ada bab yang dapat diunduh. Pastikan pembayaran Anda sudah diverifikasi.</p><br><br>
-                    <?php endif; ?>
                     </table>
+
+                <?php else: ?>
+                    <p style="color: black;">Belum ada bab yang dapat diunduh. Pastikan pembayaran Anda sudah diverifikasi.</p><br><br>
+                <?php endif; ?>
 
             </div>
         </div>
