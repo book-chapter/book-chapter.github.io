@@ -1,5 +1,14 @@
 <?php
-session_start(); // Memulai session untuk mengecek status login
+session_start();
+include 'db.php';
+
+// Cek jika pengguna belum login, arahkan ke login.html
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.html");
+  exit();
+}
+
+$user_id = $_SESSION['user_id'];
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +64,7 @@ session_start(); // Memulai session untuk mengecek status login
           <div class="col-lg-9 d-none d-lg-block">
           </div>
           <div class="col-lg-3 text-right">
-            <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+            <?php if (isset($_SESSION['user_id'])): ?>
               <!-- Jika sudah login, tampilkan nama pengguna dan opsi logout -->
               <div class="dropdown">
                 <a href="#" class="small btn btn-primary px-4 py-2 rounded-0 dropdown-toggle" id="accountDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
