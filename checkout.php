@@ -2,6 +2,7 @@
 session_start();
 include 'db.php';
 
+$user_id = $_SESSION['user_id'];
 $chapter_id = $_GET['chapter_id'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -154,10 +155,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <div class="row">
                     <div class="col-12">
-                        <h>Silakan lakukan pembayaran ke nomor rekening berikut: <br>
+                        <h5>Silakan lakukan pembayaran ke nomor rekening berikut: <br>
 
-                            Bank ABC - 1234567890 (atas nama Book Chapter App)</h>
-                        <br><br><input type="submit" value="Konfirmasi Pembayaran" class="btn btn-primary btn-lg px-5">
+                            Bank ABC - 1234567890 (atas nama Book Chapter App)</h5>
+                        <form method="POST"><br>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">Saya Sudah Membayar</button>
+                        </form>
                     </div>
                 </div>
             </div>
