@@ -18,7 +18,7 @@ session_start(); // Memulai session untuk mengecek status login
   <!-- Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
-    
+
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
       <div>
@@ -27,7 +27,7 @@ session_start(); // Memulai session untuk mengecek status login
             <img src="./src/assets/images/logos/dark-logo.svg" width="180" alt="Logo" />
           </a>
         </div>
-        
+
         <!-- Sidebar navigation -->
         <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
           <ul id="sidebarnav">
@@ -82,48 +82,48 @@ session_start(); // Memulai session untuk mengecek status login
 
             // Cek koneksi
             if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
+              die("Connection failed: " . $conn->connect_error);
             }
 
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $action = $_POST['action'];
-                
-                if ($action == 'add') {
-                    $title = $_POST['title'];
-                    $description = $_POST['description'];
-                    $price = $_POST['price'];
-                    $file_name = basename($_FILES['chapter_file']['name']);
-                    $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-                    
-                    // Validasi tipe file
-                    $allowed_types = ['docx'];
-                    if (in_array($file_type, $allowed_types)) {
-                        $upload_dir = 'uploads/chapters/';
-                        // Buat folder jika belum ada
-                        if (!is_dir($upload_dir)) {
-                            mkdir($upload_dir, 0777, true);
-                        }
-                        $file_path = $upload_dir . $file_name;
-                    
-                        // Pindahkan file ke direktori tujuan
-                        if (move_uploaded_file($_FILES['chapter_file']['tmp_name'], $file_path)) {
-                            $sql = "INSERT INTO chapters (title, description, price, file_path) VALUES ('$title', '$description', '$price', '$file_path')";
-                            if ($conn->query($sql) === TRUE) {
-                                echo "<div class='alert alert-success'>Bab buku berhasil ditambahkan!</div>";
-                            } else {
-                                echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
-                            }
-                        } else {
-                            echo "<div class='alert alert-danger'>Gagal mengunggah file. Pastikan folder memiliki izin tulis.</div>";
-                        }
+              $action = $_POST['action'];
+
+              if ($action == 'add') {
+                $title = $_POST['title'];
+                $description = $_POST['description'];
+                $price = $_POST['price'];
+                $file_name = basename($_FILES['chapter_file']['name']);
+                $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+                // Validasi tipe file
+                $allowed_types = ['docx'];
+                if (in_array($file_type, $allowed_types)) {
+                  $upload_dir = 'uploads/chapters/';
+                  // Buat folder jika belum ada
+                  if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                  }
+                  $file_path = $upload_dir . $file_name;
+
+                  // Pindahkan file ke direktori tujuan
+                  if (move_uploaded_file($_FILES['chapter_file']['tmp_name'], $file_path)) {
+                    $sql = "INSERT INTO chapters (title, description, price, file_path) VALUES ('$title', '$description', '$price', '$file_path')";
+                    if ($conn->query($sql) === TRUE) {
+                      echo "<div class='alert alert-success'>Bab buku berhasil ditambahkan!</div>";
                     } else {
-                        echo "<div class='alert alert-warning'>Hanya file DOCX yang diperbolehkan.</div>";
+                      echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
                     }
-                } elseif ($action == 'delete') {
-                    $chapter_id = $_POST['chapter_id'];
-                    $sql = "DELETE FROM chapters WHERE chapter_id = '$chapter_id'";
-                    $conn->query($sql);
+                  } else {
+                    echo "<div class='alert alert-danger'>Gagal mengunggah file. Pastikan folder memiliki izin tulis.</div>";
+                  }
+                } else {
+                  echo "<div class='alert alert-warning'>Hanya file DOCX yang diperbolehkan.</div>";
                 }
+              } elseif ($action == 'delete') {
+                $chapter_id = $_POST['chapter_id'];
+                $sql = "DELETE FROM chapters WHERE chapter_id = '$chapter_id'";
+                $conn->query($sql);
+              }
             }
 
             $chapters = $conn->query("SELECT * FROM chapters");
@@ -138,46 +138,57 @@ session_start(); // Memulai session untuk mengecek status login
 
                 <h2>Tambah Bab Baru</h2>
                 <form method="POST" enctype="multipart/form-data">
-                    <label for="title">Judul Bab:</label>
-                    <input type="text" id="title" name="title" required>
-                    
-                    <label for="description">Deskripsi:</label>
-                    <textarea id="description" name="description" rows="4" required></textarea>
-                    
-                    <label for="price">Harga:</label>
-                    <input type="number" id="price" name="price" required>
-                    
-                    <label for="chapter_file">File Bab (.docx):</label>
-                    <input type="file" id="chapter_file" name="chapter_file" required>
-                    
-                    <button type="submit" name="action" value="add">Tambah Bab</button>
+                  <label for="title">Judul Bab:</label>
+                  <input type="text" id="title" name="title" required>
+
+                  <label for="description">Deskripsi:</label>
+                  <textarea id="description" name="description" rows="4" required></textarea>
+
+                  <label for="price">Harga:</label>
+                  <input type="number" id="price" name="price" required>
+
+                  <label for="chapter_file">File Bab (.docx):</label>
+                  <input type="file" id="chapter_file" name="chapter_file" required>
+
+                  <label for="chapter_file">File Gambar Cover Bab (.jpg, .png):</label>
+                  <input type="file" id="image_file" name="image_file" required>
+
+                  <button type="submit" name="action" value="add">Tambah Bab</button>
                 </form>
 
                 <h2>Daftar Bab Buku</h2>
                 <table>
+                  <tr>
+                    <th>ID</th>
+                    <th>Judul</th>
+                    <th>Deskripsi</th>
+                    <th>Harga</th>
+                    <th>File</th>
+                    <th>Gambar</th>
+                    <th>Aksi</th>
+                  </tr>
+                  <?php while ($chapter = $chapters->fetch_assoc()): ?>
                     <tr>
-                        <th>ID</th>
-                        <th>Judul</th>
-                        <th>Deskripsi</th>
-                        <th>Harga</th>
-                        <th>File</th>
-                        <th>Aksi</th>
+                      <td><?= $chapter['chapter_id'] ?></td>
+                      <td><?= htmlspecialchars($chapter['title']) ?></td>
+                      <td><?= htmlspecialchars($chapter['description']) ?></td>
+                      <td>Rp <?= number_format($chapter['price'], 2, ',', '.') ?></td>
+                      <td><a href="<?= htmlspecialchars($chapter['file_path']) ?>" download>Unduh</a></td>
+                      <td>
+                        <?php if ($chapter['image_path']): ?>
+                          <img src="<?= htmlspecialchars($chapter['image_path']) ?>" alt="Gambar Bab" style="width: 100px;">
+                        <?php else: ?>
+                          Tidak ada gambar
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <form method="POST" style="display:inline;">
+                          <input type="hidden" name="chapter_id" value="<?= $chapter['chapter_id'] ?>">
+                          <button type="submit" name="action" value="delete" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Hapus</button>
+                        </form>
+                      </td>
                     </tr>
-                    <?php while ($chapter = $chapters->fetch_assoc()): ?>
-                        <tr>
-                            <td><?= $chapter['chapter_id'] ?></td>
-                            <td><?= htmlspecialchars($chapter['title']) ?></td>
-                            <td><?= htmlspecialchars($chapter['description']) ?></td>
-                            <td>Rp <?= number_format($chapter['price'], 2, ',', '.') ?></td>
-                            <td><a href="<?= htmlspecialchars($chapter['file_path']) ?>" download>Unduh</a></td>
-                            <td>
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="chapter_id" value="<?= $chapter['chapter_id'] ?>">
-                                    <button type="submit" name="action" value="delete" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Hapus</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
+                  <?php endwhile; ?>
                 </table>
               </div>
             </div>
@@ -188,11 +199,12 @@ session_start(); // Memulai session untuk mengecek status login
     <!-- Main content End -->
   </div>
 
-     <!-- Scripts -->
-    <script src="./src/assets/libs/jquery/dist/jquery.min.js"></script>
-    <script src="./src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./src/assets/js/sidebarmenu.js"></script>
-    <script src="./src/assets/js/app.min.js"></script>
-    <script src="./src/assets/libs/simplebar/dist/simplebar.js"></script>
+  <!-- Scripts -->
+  <script src="./src/assets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="./src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./src/assets/js/sidebarmenu.js"></script>
+  <script src="./src/assets/js/app.min.js"></script>
+  <script src="./src/assets/libs/simplebar/dist/simplebar.js"></script>
 </body>
+
 </html>

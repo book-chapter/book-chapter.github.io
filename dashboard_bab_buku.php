@@ -2,9 +2,13 @@
 session_start();
 include 'db.php';
 
-// Mengambil daftar bab yang tersedia untuk dibeli
-$chapters = $conn->query("SELECT * FROM chapters");
+// Cek jika pengguna belum login, arahkan ke login.html
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.html");
+    exit();
+}
 
+$user_id = $_SESSION['user_id'];
 ?>
 
 <?php
@@ -158,11 +162,12 @@ $result = $conn->query($sql);
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <div class="col-lg-4 mb-5">
                                 <div class="news-entry-item">
-                                    <!-- Menampilkan gambar atau gambar default -->
                                     <?php
-                                    $imagePath = !empty($row['image_path']) && file_exists("Admin/" . $row['image_path'])
-                                        ? "Admin/" . $row['image_path']
+                                    $imagePath = (!empty($row['image_path']) && is_file($row['image_path']))
+                                        ? $row['image_path']
                                         : 'images/default_img.jpg';
+
+                                    // Debugging tambahan untuk memastikan path yang digunak
                                     ?>
                                     <a href="#" class="thumbnail" data-toggle="modal" data-target="#chapterModal<?php echo $row['chapter_id']; ?>">
                                         <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Image" class="img-fluid">
@@ -171,10 +176,12 @@ $result = $conn->query($sql);
                                             <span><?php echo date("M", strtotime($row['created_at'])); ?></span>
                                         </div>
                                     </a>
+
                                     <h3 class="mb-0"><a href="#"><?php echo htmlspecialchars($row['title']); ?></a></h3>
                                     <p><strong>Harga: </strong>Rp <?php echo number_format($row['price'], 2, ',', '.'); ?></p>
                                 </div>
                             </div>
+
 
                             <!-- Modal untuk detail bab buku -->
                             <div class="modal fade" id="chapterModal<?php echo $row['chapter_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="chapterModalLabel<?php echo $row['chapter_id']; ?>" aria-hidden="true">

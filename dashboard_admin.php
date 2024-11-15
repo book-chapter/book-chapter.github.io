@@ -1,5 +1,6 @@
 <?php
 session_start(); // Memulai session untuk mengecek status login
+include 'db.php';
 ?>
 
 <!doctype html>
@@ -15,7 +16,8 @@ session_start(); // Memulai session untuk mengecek status login
   <!-- Tambahkan CSS untuk menggeser konten utama -->
   <style>
     .main-content {
-      margin-left: 250px; /* Pastikan margin ini sesuai dengan lebar sidebar */
+      margin-left: 250px;
+      /* Pastikan margin ini sesuai dengan lebar sidebar */
       padding: 20px;
     }
   </style>
@@ -25,7 +27,7 @@ session_start(); // Memulai session untuk mengecek status login
   <!-- Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
-    
+
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
       <div>
@@ -34,7 +36,7 @@ session_start(); // Memulai session untuk mengecek status login
             <img src="./src/assets/images/logos/dark-logo.svg" width="180" alt="Logo" />
           </a>
         </div>
-        
+
         <!-- Sidebar navigation -->
         <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
           <ul id="sidebarnav">
@@ -79,33 +81,25 @@ session_start(); // Memulai session untuk mengecek status login
           <div class="col-12">
             <!-- Ambil jumlah pengguna dari database -->
             <?php
-            // Koneksi ke database
-            $servername = "localhost";
-            $username = "root";
-            $password = ""; // Ganti dengan password MySQL Anda
-            $dbname = "book_chapter"; // Nama database
-
-            // Membuat koneksi
-            $conn = new mysqli($servername, $username, $password, $dbname);
-
-            // Cek koneksi
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-
-            // Query untuk menghitung jumlah user
+            // Query for user count
             $sql = "SELECT COUNT(*) as total_users FROM users";
             $result = $conn->query($sql);
             $user_count = 0;
 
             if ($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                $user_count = $row['total_users'];
+              $row = $result->fetch_assoc();
+              $user_count = $row['total_users'];
             }
 
-            $conn->close();
+            // Query to fetch user details
+            $sql_users = "SELECT user_id, username, email, full_name, created_at FROM users";
+            $users = $conn->query($sql_users);
+
+            if ($users === false) {
+              echo "Error: " . $conn->error;
+            }
             ?>
-            
+
             <!-- Menampilkan jumlah pengguna -->
             <div class="card">
               <div class="card-body">
@@ -113,6 +107,38 @@ session_start(); // Memulai session untuk mengecek status login
                 <p class="card-text">Total pengguna: <?php echo $user_count; ?></p>
               </div>
             </div>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">ID_User</th>
+                  <th scope="col">Username</th>
+                  <th scope="col">Nama Lengkap</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Tanggal Registrasi</th>
+                  <th scope="col">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php while ($user = $users->fetch_assoc()): ?>
+                  <tr>
+                    <td><?= $user['user_id'] ?></td>
+                    <td><?= htmlspecialchars($user['username']) ?></td>
+                    <td><?= htmlspecialchars($user['email']) ?></td>
+                    <td><?= htmlspecialchars($user['full_name']) ?></td>
+                    <td><?= $user['created_at'] ?></td>
+                    <td>
+                      <!-- Tombol Hapus User -->
+                      <form method="POST" action="delete_user.php" style="display:inline;">
+                        <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
+                        <button type="submit" class="btn btn-secondary" onclick="return confirm('Yakin ingin menghapus user ini?');">Hapus</button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php endwhile; ?>
+              </tbody>
+            </table>
+
           </div>
         </div>
       </div>
@@ -127,4 +153,5 @@ session_start(); // Memulai session untuk mengecek status login
   <script src="./src/assets/js/app.min.js"></script>
   <script src="./src/assets/libs/simplebar/dist/simplebar.js"></script>
 </body>
+
 </html>

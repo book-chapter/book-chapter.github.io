@@ -91,8 +91,8 @@ $user_id = $_SESSION['user_id'];
                 <div class="row align-items-center justify-content-center">
                     <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
                         <div class="intro">
-                            <h1>Upload Hasil Pengerjaan Bab Buku</h1><br>
-                            <p>Unggah hasil pengerjaan atau catatan dari bab yang Anda pelajari untuk referensi atau penyimpanan.</p>
+                            <h1>Hasil Pengerjaan Bab Buku</h1><br>
+                            <p>Silahkan Cek Apakah Hasil Pengerjaan anda Berhasil atau Tidak Berhasil</p>
                         </div>
                     </div>
                 </div>
@@ -101,57 +101,46 @@ $user_id = $_SESSION['user_id'];
 
         <div class="site-section pb-0 table-responsive">
             <div class="container">
-                <h2 class="text-center">Upload Hasil Pengerjaan Bab Buku</h2>
-                <p class="text-center">Jika Anda sudah selesai mengerjakan bab buku, unggah hasilnya di sini:</p> <br>
+                <h2 class="text-center">Hasil Pengerjaan Bab Buku</h2><br>
 
                 <?php
-                // Mengambil daftar bab yang sudah dibayar dan dicek apakah sudah diupload atau belum
-                $completed_orders = $conn->query("SELECT orders.order_id, chapters.title 
-                                  FROM orders 
-                                  JOIN chapters ON orders.chapter_id = chapters.chapter_id 
-                                  WHERE orders.user_id = '$user_id' AND orders.status = 'approved'");
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    $order_id = $_POST['order_id'];
+                    $allowed_types = ['pdf', 'doc', 'docx'];
+                    $file_name = basename($_FILES['completed_chapter']['name']);
+                    $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                    $upload_dir = 'uploads/completed/';
+                    $completed_chapter_path = $upload_dir . $file_name;
+
+                    if (in_array($file_type, $allowed_types)) {
+                        if (!is_dir($upload_dir)) {
+                            mkdir($upload_dir, 0777, true);
+                        }
+
+                        if (move_uploaded_file($_FILES['completed_chapter']['tmp_name'], $completed_chapter_path)) {
+                            $sql = "INSERT INTO uploads (order_id, file_path) VALUES ('$order_id', '$completed_chapter_path')";
+                            if ($conn->query($sql) === TRUE) {
+                                echo '<div class="alert alert-success mt-3" role="alert">
+                          <strong>Sukses!</strong> Hasil pengerjaan bab berhasil diunggah!
+                      </div>';
+                            } else {
+                                echo '<div class="alert alert-danger mt-3" role="alert">
+                          <strong>Error!</strong> Terjadi kesalahan: ' . $conn->error . '
+                      </div>';
+                            }
+                        } else {
+                            echo '<div class="alert alert-danger mt-3" role="alert">
+                      <strong>Gagal!</strong> Gagal mengunggah file. Pastikan folder memiliki izin tulis.
+                  </div>';
+                        }
+                    } else {
+                        echo '<div class="alert alert-warning mt-3" role="alert">
+                  <strong>Perhatian!</strong> Hanya file PDF, DOC, dan DOCX yang diperbolehkan.
+              </div>';
+                    }
+                }
                 ?>
 
-                <?php if ($completed_orders->num_rows > 0): ?>
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="text-center">No</th>
-                                <th scope="col" class="text-center">Judul Bab</th>
-                                <th scope="col" class="text-right">Upload Hasil</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $i = 1; ?>
-                            <?php while ($order = $completed_orders->fetch_assoc()): ?>
-                                <?php
-                                // Cek apakah hasil untuk order_id ini sudah diunggah (tanpa user_id)
-                                $order_id = $order['order_id'];
-                                $upload_check = $conn->query("SELECT * FROM uploads WHERE order_id = '$order_id'");
-                                $already_uploaded = $upload_check->num_rows > 0;
-                                ?>
-                                <tr>
-                                    <td class="align-middle text-center"><?= $i++ ?></td>
-                                    <td class="align-middle text-center"><?= htmlspecialchars($order['title']) ?></td>
-                                    <td class="align-middle">
-                                        <?php if ($already_uploaded): ?>
-                                            <span class="text-success">Sudah diunggah</span>
-                                        <?php else: ?>
-                                            <form method="POST" action="dashboard_berhasil_upload_pengerjaan.php" enctype="multipart/form-data" class="d-flex justify-content-between align-items-center">
-                                                <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
-                                                <input type="file" name="completed_chapter" class="form-control-file" style="flex: 1; margin-right: 10px;" required>
-                                                <button type="submit" class="btn btn-primary btn-sm">Upload</button>
-                                            </form>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
-
-                <?php else: ?>
-                    <p style="color: black;">Tidak ada bab yang dapat diunggah hasil pengerjaannya.</p><br><br>
-                <?php endif; ?>
 
             </div>
         </div>
