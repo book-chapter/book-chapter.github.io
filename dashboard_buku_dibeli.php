@@ -30,7 +30,7 @@ $user_id = $_SESSION['user_id'];
     <link rel="stylesheet" href="css/aos.css">
     <link href="css/jquery.mb.YTPlayer.min.css" media="all" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/style.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
@@ -76,9 +76,11 @@ $user_id = $_SESSION['user_id'];
                     <div class="mr-auto">
                         <nav class="site-navigation position-relative text-right" role="navigation">
                             <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                                <li><a href="dashboard.php" class="nav-link text-left">Beranda</a></li>
-                                <li class="active"><a href="dashboard_buku.php" class="nav-link text-left">Buku</a></li>
-                                <li><a href="dashboard_kontak.php" class="nav-link text-left">Bantuan</a></li>
+                                <li>
+                                    <a href="dashboard_buku.php" class="nav-link text-left">
+                                        <i class="fas fa-arrow-left"></i> Back
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </div>
@@ -105,11 +107,11 @@ $user_id = $_SESSION['user_id'];
                 <p class="text-center">Anda dapat mengunduh bab buku yang sudah dibayar di sini:</p> <br>
 
                 <?php
-                // Mengambil daftar bab yang sudah dibayar (status 'approved')
-                $orders = $conn->query("SELECT orders.order_id, chapters.title, chapters.file_path 
+                // Mengambil daftar bab yang dibeli user (waiting, approved, rejected)
+                $orders = $conn->query("SELECT orders.order_id, chapters.title, chapters.file_path, orders.status 
                         FROM orders 
                         JOIN chapters ON orders.chapter_id = chapters.chapter_id 
-                        WHERE orders.user_id = '$user_id' AND orders.status = 'approved'");
+                        WHERE orders.user_id = '$user_id'");
                 ?>
 
                 <?php if ($orders->num_rows > 0): ?>
@@ -117,8 +119,9 @@ $user_id = $_SESSION['user_id'];
                         <thead>
                             <tr>
                                 <th scope="col" class="text-center">No</th>
-                                <th scope="col" class="text-center">Judul bab</th>
-                                <th scope="col" class="text-center">Aksi</th> <!-- Gunakan text-right dan lebar proporsional -->
+                                <th scope="col" class="text-center">Judul Bab</th>
+                                <th scope="col" class="text-center">Status</th>
+                                <th scope="col" class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -128,17 +131,30 @@ $user_id = $_SESSION['user_id'];
                                     <td class="align-middle text-center"><?= $i++ ?></td>
                                     <td class="align-middle text-center"><?= htmlspecialchars($order['title']) ?></td>
                                     <td class="align-middle text-center">
-                                        <a href="<?= htmlspecialchars($order['file_path']) ?>" class="btn btn-primary btn-sm" download>Unduh Bab Buku</a>
+                                        <?php 
+                                            if ($order['status'] == 'approved') {
+                                                echo 'Approved';
+                                            } elseif ($order['status'] == 'waiting_confirmation') {
+                                                echo 'Waiting';
+                                            } elseif ($order['status'] == 'rejected') {
+                                                echo 'Rejected';
+                                            }
+                                        ?>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <?php if ($order['status'] == 'approved'): ?>
+                                            <a href="<?= htmlspecialchars($order['file_path']) ?>" class="btn btn-primary btn-sm" download>Unduh Bab Buku</a>
+                                        <?php else: ?>
+                                            <span class="btn btn-secondary btn-sm disabled">Unduh Bab Buku</span>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         </tbody>
                     </table>
-
                 <?php else: ?>
                     <p style="color: black;">Belum ada bab yang dapat diunduh. Pastikan pembayaran Anda sudah diverifikasi.</p><br><br>
                 <?php endif; ?>
-
             </div>
         </div>
 
