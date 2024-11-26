@@ -338,3 +338,15 @@ jQuery(document).ready(function($) {
 	});
 
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.querySelector(".js-menu-toggle");
+    const mobileMenu = document.querySelector(".site-mobile-menu-body");
+
+    if (menuToggle) {
+        menuToggle.addEventListener("click", function (e) {
+            e.preventDefault();
+            mobileMenu.classList.toggle("open");
+        });
+    }
+});

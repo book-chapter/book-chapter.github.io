@@ -10,7 +10,7 @@ include 'db.php';
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Dashboard</title>
-  <link rel="shortcut icon" type="image/png" href="./src/assets/images/logos/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="./src/assets/images/logos/logo_bc.png" />
   <link rel="stylesheet" href="./src/assets/css/styles.min.css" />
 
   <!-- Tambahkan CSS untuk menggeser konten utama -->
@@ -33,7 +33,7 @@ include 'db.php';
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="./dashboard_admin.php" class="text-nowrap logo-img">
-            <img src="./src/assets/images/logos/dark-logo.svg" width="180" alt="Logo" />
+            <img src="./src/assets/images/logos/logoadmin.svg" width="220" alt="Logo" />
           </a>
         </div>
 

@@ -19,28 +19,19 @@ $user_id = $_SESSION['user_id'];
     <title>BookKeeping &mdash; Website by Colorlib</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
     <link href="https://fonts.googleapis.com/css?family=Muli:300,400,700,900" rel="stylesheet">
     <link rel="stylesheet" href="fonts/icomoon/style.css">
-
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-
     <link rel="stylesheet" href="css/jquery.fancybox.min.css">
-
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
-
     <link rel="stylesheet" href="fonts/flaticon/font/flaticon.css">
-
     <link rel="stylesheet" href="css/aos.css">
     <link href="css/jquery.mb.YTPlayer.min.css" media="all" rel="stylesheet" type="text/css">
-
     <link rel="stylesheet" href="css/style.css">
-
 
 
 </head>
@@ -48,7 +39,6 @@ $user_id = $_SESSION['user_id'];
 <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
 
     <div class="site-wrap">
-
         <div class="site-mobile-menu site-navbar-target">
             <div class="site-mobile-menu-header">
                 <div class="site-mobile-menu-close mt-3">
@@ -86,42 +76,56 @@ $user_id = $_SESSION['user_id'];
         </div>
 
         <header class="site-navbar py-4 js-sticky-header site-navbar-target" role="banner">
-
-            <div class="container">
-                <div class="d-flex align-items-center">
-                    <div class="site-logo">
-                        <a href="dashboard.php" class="d-block">
-                            BookChapter.
-                        </a>
-                    </div>
-                    <div class="mr-auto">
-                        <nav class="site-navigation position-relative text-right" role="navigation">
-                            <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                                <li>
-                                    <a href="dashboard.php" class="nav-link text-left">Beranda</a>
-                                </li>
-                                <li class="active">
-                                    <a href="dashboard_buku.php" class="nav-link text-left">Buku</a>
-                                </li>
-                                <li>
-                                    <a href="dashboard_kontak.php" class="nav-link text-left">Bantuan</a>
-                                </li>
-                            </ul>
-                        </nav>
-
-                    </div>
-                    <div class="ml-auto">
-                        <div class="social-wrap">
-
-                            <a href="#" class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black"><span
-                                    class="icon-menu h3"></span></a>
-                        </div>
-                    </div>
-
-                </div>
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <!-- Logo -->
+            <div class="site-logo">
+                <a href="dashboard.php" class="d-block">BookChapter.</a>
             </div>
+            
+            <!-- Navigation (for Desktop and Mobile) -->
+            <div class="mr-auto">
+                <!-- Navbar for mobile devices -->
+                <nav class="site-navigation position-relative text-right" role="navigation">
+                    <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
+                        <li><a href="dashboard.php" class="nav-link text-left">Beranda</a></li>
+                        <li class="active"><a href="dashboard_buku.php" class="nav-link text-left">Buku</a></li>
+                        <li><a href="dashboard_kontak.php" class="nav-link text-left">Bantuan</a></li>
+                    </ul>
+                </nav>
 
-        </header>
+                <!-- Mobile Navbar Toggle Button -->
+                <nav class="navbar navbar-expand-lg navbar-light d-lg-none">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="dashboard.php">Beranda</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="dashboard_buku.php">Buku</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="dashboard_kontak.php">Bantuan</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            
+            <!-- User Account Menu (for logged-in users) -->
+            <div class="ml-auto">
+                <!-- <div class="">
+                    <a class="">
+                        <span class=""></span>
+                    </a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</header>
 
 
         <div class="intro-section small" style="background-image: url('images/hero_1.jpg');">
