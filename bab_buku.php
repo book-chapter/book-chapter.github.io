@@ -1,5 +1,106 @@
 <?php
 session_start(); // Memulai session untuk mengecek status login
+
+// Koneksi ke database
+$servername = "localhost";
+$username = "root";
+$password = ""; // Ganti dengan password MySQL Anda
+$dbname = "book_chapter"; // Nama database
+
+// Membuat koneksi
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Cek koneksi
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $action = $_POST['action'];
+
+  if ($action == 'add') {
+    $title = $_POST['title'];
+    $description = $_POST['description'];
+    $price = $_POST['price'];
+
+    // Mengupload file .docx
+    $file_name = basename($_FILES['chapter_file']['name']);
+    $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+    // Validasi tipe file .docx
+    $allowed_types = ['docx'];
+    if (in_array($file_type, $allowed_types)) {
+      $upload_dir = 'uploads/chapters/';
+      // Buat folder jika belum ada
+      if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+      }
+      $file_path = $upload_dir . $file_name;
+
+      // Pindahkan file .docx ke direktori tujuan
+      if (move_uploaded_file($_FILES['chapter_file']['tmp_name'], $file_path)) {
+
+        // Menangani upload gambar cover
+        $image_name = basename($_FILES['image_path']['name']);
+        $image_type = strtolower(pathinfo($image_name, PATHINFO_EXTENSION));
+        $allowed_image_types = ['jpg', 'jpeg', 'png'];
+
+        if (in_array($image_type, $allowed_image_types)) {
+          $image_dir = 'uploads/images/';
+          if (!is_dir($image_dir)) {
+            mkdir($image_dir, 0777, true);
+          }
+          $image_path = $image_dir . $image_name;
+
+          // Pindahkan gambar ke folder
+          if (move_uploaded_file($_FILES['image_path']['tmp_name'], $image_path)) {
+            // Menyimpan data ke database
+            $sql = "INSERT INTO chapters (title, description, price, file_path, image_path) 
+                              VALUES ('$title', '$description', '$price', '$file_path', '$image_path')";
+            if ($conn->query($sql) === TRUE) {
+              echo "<div class='alert alert-success'>Bab buku berhasil ditambahkan!</div>";
+            } else {
+              echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
+            }
+          } else {
+            echo "<div class='alert alert-danger'>Gagal mengunggah gambar. Pastikan folder gambar memiliki izin tulis.</div>";
+          }
+        } else {
+          echo "<div class='alert alert-warning'>Hanya file gambar JPG, JPEG, dan PNG yang diperbolehkan.</div>";
+        }
+      } else {
+        echo "<div class='alert alert-danger'>Gagal mengunggah file bab buku. Pastikan folder memiliki izin tulis.</div>";
+      }
+    } else {
+      echo "<div class='alert alert-warning'>Hanya file DOCX yang diperbolehkan untuk bab buku.</div>";
+    }
+  } elseif ($action == 'delete') {
+    $chapter_id = $_POST['chapter_id'];
+    $sql = "DELETE FROM chapters WHERE chapter_id = '$chapter_id'";
+    $conn->query($sql);
+  }
+}
+
+// Jangan menutup koneksi sebelum query berikutnya!
+$chapters = $conn->query("SELECT * FROM chapters");
+
+// Query for user count
+$book = "SELECT COUNT(*) as total_book FROM chapters";
+$hasil = $conn->query($book);
+$book_count = 0;
+
+if ($hasil->num_rows > 0) {
+  $row = $hasil->fetch_assoc();
+  $book_count = $row['total_book'];
+}
+
+// Query to fetch user details
+$sql_users = "SELECT chapter_id, title, description, price, created_at, image_path FROM chapters";
+$users = $conn->query($sql_users);
+
+if ($users === false) {
+  echo "Error: " . $conn->error;
+}
 ?>
 
 <!doctype html>
@@ -71,72 +172,21 @@ session_start(); // Memulai session untuk mengecek status login
         <div class="row">
           <div class="col-12">
             <?php
-            // Koneksi ke database
-            $servername = "localhost";
-            $username = "root";
-            $password = ""; // Ganti dengan password MySQL Anda
-            $dbname = "book_chapter"; // Nama database
 
-            // Membuat koneksi
-            $conn = new mysqli($servername, $username, $password, $dbname);
-
-            // Cek koneksi
-            if ($conn->connect_error) {
-              die("Connection failed: " . $conn->connect_error);
-            }
-
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-              $action = $_POST['action'];
-
-              if ($action == 'add') {
-                $title = $_POST['title'];
-                $description = $_POST['description'];
-                $price = $_POST['price'];
-                $file_name = basename($_FILES['chapter_file']['name']);
-                $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-
-                // Validasi tipe file
-                $allowed_types = ['docx'];
-                if (in_array($file_type, $allowed_types)) {
-                  $upload_dir = 'uploads/chapters/';
-                  // Buat folder jika belum ada
-                  if (!is_dir($upload_dir)) {
-                    mkdir($upload_dir, 0777, true);
-                  }
-                  $file_path = $upload_dir . $file_name;
-
-                  // Pindahkan file ke direktori tujuan
-                  if (move_uploaded_file($_FILES['chapter_file']['tmp_name'], $file_path)) {
-                    $sql = "INSERT INTO chapters (title, description, price, file_path) VALUES ('$title', '$description', '$price', '$file_path')";
-                    if ($conn->query($sql) === TRUE) {
-                      echo "<div class='alert alert-success'>Bab buku berhasil ditambahkan!</div>";
-                    } else {
-                      echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
-                    }
-                  } else {
-                    echo "<div class='alert alert-danger'>Gagal mengunggah file. Pastikan folder memiliki izin tulis.</div>";
-                  }
-                } else {
-                  echo "<div class='alert alert-warning'>Hanya file DOCX yang diperbolehkan.</div>";
-                }
-              } elseif ($action == 'delete') {
-                $chapter_id = $_POST['chapter_id'];
-                $sql = "DELETE FROM chapters WHERE chapter_id = '$chapter_id'";
-                $conn->query($sql);
-              }
-            }
-
-            $chapters = $conn->query("SELECT * FROM chapters");
-
-            $conn->close();
             ?>
 
             <!-- Menampilkan jumlah pengguna -->
             <div class="card">
               <div class="card-body">
-                <h1>Manajemen Bab Buku</h1>
+                <h5 class="card-title">Jumlah Bab Buku</h5>
+                <p class="card-text">Total Buku: <?php echo $book_count; ?></p>
+              </div>
+            </div>
 
-                <h2>Tambah Bab Baru</h2>
+            <!-- Menampilkan jumlah pengguna -->
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Monitoring Data Robots</h5><br>
                 <form method="POST" enctype="multipart/form-data">
                   <label for="title">Judul Bab:</label>
                   <input type="text" id="title" name="title" required>
@@ -151,45 +201,51 @@ session_start(); // Memulai session untuk mengecek status login
                   <input type="file" id="chapter_file" name="chapter_file" required>
 
                   <label for="chapter_file">File Gambar Cover Bab (.jpg, .png):</label>
-                  <input type="file" id="image_file" name="image_file" required>
+                  <input type="file" id="image_path" name="image_path" required>
 
                   <button type="submit" name="action" value="add">Tambah Bab</button>
                 </form>
 
-                <h2>Daftar Bab Buku</h2>
-                <table>
-                  <tr>
-                    <th>ID</th>
-                    <th>Judul</th>
-                    <th>Deskripsi</th>
-                    <th>Harga</th>
-                    <th>File</th>
-                    <th>Gambar</th>
-                    <th>Aksi</th>
-                  </tr>
-                  <?php while ($chapter = $chapters->fetch_assoc()): ?>
-                    <tr>
-                      <td><?= $chapter['chapter_id'] ?></td>
-                      <td><?= htmlspecialchars($chapter['title']) ?></td>
-                      <td><?= htmlspecialchars($chapter['description']) ?></td>
-                      <td>Rp <?= number_format($chapter['price'], 2, ',', '.') ?></td>
-                      <td><a href="<?= htmlspecialchars($chapter['file_path']) ?>" download>Unduh</a></td>
-                      <td>
-                        <?php if ($chapter['image_path']): ?>
-                          <img src="<?= htmlspecialchars($chapter['image_path']) ?>" alt="Gambar Bab" style="width: 100px;">
-                        <?php else: ?>
-                          Tidak ada gambar
-                        <?php endif; ?>
-                      </td>
-                      <td>
-                        <form method="POST" style="display:inline;">
-                          <input type="hidden" name="chapter_id" value="<?= $chapter['chapter_id'] ?>">
-                          <button type="submit" name="action" value="delete" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Hapus</button>
-                        </form>
-                      </td>
-                    </tr>
-                  <?php endwhile; ?>
-                </table>
+                <h5 class="card-title">Daftar Bab Buku</h5>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Judul</th>
+                        <th scope="col">Deskripsi</th>
+                        <th scope="col">Harga</th>
+                        <th scope="col">File</th>
+                        <th scope="col">Gambar</th>
+                        <th scope="col">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php while ($chapter = $chapters->fetch_assoc()): ?>
+                        <tr>
+                          <td><?= $chapter['chapter_id'] ?></td>
+                          <td><?= htmlspecialchars($chapter['title']) ?></td>
+                          <td><?= htmlspecialchars($chapter['description']) ?></td>
+                          <td>Rp <?= number_format($chapter['price'], 2, ',', '.') ?></td>
+                          <td><a href="<?= htmlspecialchars($chapter['file_path']) ?>" download>Unduh</a></td>
+                          <td>
+                            <?php if ($chapter['image_path']): ?>
+                              <img src="<?= htmlspecialchars($chapter['image_path']) ?>" alt="Gambar Bab" style="width: 100px;">
+                            <?php else: ?>
+                              Tidak ada gambar
+                            <?php endif; ?>
+                          </td>
+                          <td>
+                            <form method="POST" style="display:inline;">
+                              <input type="hidden" name="chapter_id" value="<?= $chapter['chapter_id'] ?>">
+                              <button type="submit" name="action" value="delete" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Hapus</button>
+                            </form>
+                          </td>
+                        </tr>
+                      <?php endwhile; ?>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
