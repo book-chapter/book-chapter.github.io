@@ -6,14 +6,14 @@ session_start(); // Memulai session untuk mengecek status login
 <html lang="en">
 
 <head>
-  <title>BookKeeping &mdash; Website by Colorlib</title>
+  <title>Book Chapter &mdash; About</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 
   <link href="https://fonts.googleapis.com/css?family=Muli:300,400,700,900" rel="stylesheet">
   <link rel="stylesheet" href="fonts/icomoon/style.css">
-
+  <link rel="shortcut icon" type="image/png" href="./src/assets/images/logos/logo_bc.png" />
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/jquery-ui.css">
   <link rel="stylesheet" href="css/owl.carousel.min.css">
@@ -88,8 +88,8 @@ session_start(); // Memulai session untuk mengecek status login
                         <!-- Navbar for Desktop -->
                         <nav class="site-navigation position-relative text-right" role="navigation">
                             <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                                <li class="active"><a href="index.php" class="nav-link text-left">Beranda</a></li>
-                                <li><a href="about.php" class="nav-link text-left">Tentang</a></li>
+                                <li><a href="index.php" class="nav-link text-left">Beranda</a></li>
+                                <li class="active"><a href="about.php" class="nav-link text-left">Tentang</a></li>
                                 <li><a href="services.php" class="nav-link text-left">Layanan</a></li>
                                 <li><a href="contact.php" class="nav-link text-left">Hubungi Kami</a></li>
                             </ul>
@@ -102,8 +102,8 @@ session_start(); // Memulai session untuk mengecek status login
                             </button>
                             <div class="collapse navbar-collapse" id="navbarNav">
                                 <ul class="site-menu main-menu js-clone-nav mr-auto">
-                                    <li class="active"><a href="index.php" class="nav-link text-left">Beranda</a></li>
-                                    <li><a href="about.php" class="nav-link text-left">Tentang</a></li>
+                                    <li><a href="index.php" class="nav-link text-left">Beranda</a></li>
+                                    <li class="active"><a href="about.php" class="nav-link text-left">Tentang</a></li>
                                     <li><a href="services.php" class="nav-link text-left">Layanan</a></li>
                                     <li><a href="contact.php" class="nav-link text-left">Hubungi Kami</a></li>
                                 </ul>

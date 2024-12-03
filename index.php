@@ -6,14 +6,14 @@ session_start(); // Memulai session untuk mengecek status login
 <html lang="en">
 
 <head>
-  <title>BookKeeping &mdash; Website by Colorlib</title>
+  <title>Book Chapter</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 
   <link href="https://fonts.googleapis.com/css?family=Muli:300,400,700,900" rel="stylesheet">
   <link rel="stylesheet" href="fonts/icomoon/style.css">
-
+  <link rel="shortcut icon" type="image/png" href="./src/assets/images/logos/logo_bc.png" />
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/jquery-ui.css">
   <link rel="stylesheet" href="css/owl.carousel.min.css">

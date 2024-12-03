@@ -16,10 +16,11 @@ $user_id = $_SESSION['user_id'];
 <html lang="en">
 
 <head>
-    <title>BookKeeping &mdash; Website by Colorlib</title>
+    <title>Book Chapter &mdash; Buku</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Muli:300,400,700,900" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="./src/assets/images/logos/logo_bc.png" />
     <link rel="stylesheet" href="fonts/icomoon/style.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery-ui.css">
