@@ -193,7 +193,7 @@ $result = $conn->query($sql);
                                     </a>
 
                                     <h3 class="mb-0"><a href="#"><?php echo htmlspecialchars($row['title']); ?></a></h3>
-                                    <p><strong>Harga: </strong>Rp <?php echo number_format($row['price'], 2, ',', '.'); ?></p>
+                                    <p><strong>Harga: </strong>Rp<?php echo number_format($row['price'], 2, ',', '.'); ?></p>
                                 </div>
                             </div>
 
