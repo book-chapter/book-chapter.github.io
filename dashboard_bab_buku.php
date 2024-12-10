@@ -1,17 +1,4 @@
 <?php
-session_start();
-include 'db.php';
-
-// Cek jika pengguna belum login, arahkan ke login.html
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.html");
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-?>
-
-<?php
 // Database connection
 $servername = "localhost";
 $username = "root";
@@ -25,10 +12,33 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Pastikan mengambil kolom image_path
-$sql = "SELECT chapter_id, title, description, price, file_path, image_path, created_at FROM chapters ORDER BY created_at DESC";
-$result = $conn->query($sql);
+// Query untuk data buku
+$sqlBooks = "SELECT id AS book_id, title, category FROM book_details ORDER BY category, title ASC";
+$resultBooks = $conn->query($sqlBooks);
+if (!$resultBooks) {
+    die("Error in SQL Query (Books): " . $conn->error);
+}
+
+
+// Query untuk data bab buku
+$sqlChapters = "SELECT * FROM chapters";
+$resultChapters = $conn->query($sqlChapters);
+if (!$resultChapters) {
+    die("Error in SQL Query (Chapters): " . $conn->error);
+}
+
+
+// Kelompokkan bab buku berdasarkan book_id
+$chapters = [];
+if ($resultChapters->num_rows > 0) {
+    while ($row = $resultChapters->fetch_assoc()) {
+        if (!empty($row['book_id'])) {
+            $chapters[$row['book_id']][] = $row;
+        }
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -160,10 +170,10 @@ $result = $conn->query($sql);
         <div class="intro-section small" style="background-image: url('images/hero_1.jpg');">
             <div class="container">
                 <div class="row align-items-center justify-content-center">
-                    <div class="col-md-7 mx-auto text-center" data-aos="fade-up">
+                    <div class="col-md-7 mx-auto text-center">
                         <div class="intro">
-                            <h1>Daftar Bab Buku</h1><br>
-                            <p>Temukan bab-bab pilihan dari berbagai topik. Pilih yang sesuai dengan kebutuhan belajar Anda dan mulai eksplorasi sekarang.</p>
+                            <h1>Daftar Buku</h1>
+                            <p>Pilih buku berdasarkan kategori dan judul, lalu pilih bab yang ingin Anda checkout.</p>
                         </div>
                     </div>
                 </div>
@@ -173,59 +183,55 @@ $result = $conn->query($sql);
         <div class="site-section pb-0">
             <div class="container">
                 <div class="row">
-                    <?php if ($result->num_rows > 0): ?>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+                    <?php if ($resultBooks->num_rows > 0): ?>
+                        <?php while ($row = $resultBooks->fetch_assoc()): ?>
                             <div class="col-lg-4 mb-5">
                                 <div class="news-entry-item">
-                                    <?php
-                                    $imagePath = (!empty($row['image_path']) && is_file($row['image_path']))
-                                        ? $row['image_path']
-                                        : 'images/default_img.jpg';
-
-                                    // Debugging tambahan untuk memastikan path yang digunak
-                                    ?>
-                                    <a href="#" class="thumbnail" data-toggle="modal" data-target="#chapterModal<?php echo $row['chapter_id']; ?>">
-                                        <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Image" class="img-fluid">
-                                        <div class="date">
-                                            <span><?php echo date("j", strtotime($row['created_at'])); ?></span>
-                                            <span><?php echo date("M", strtotime($row['created_at'])); ?></span>
-                                        </div>
-                                    </a>
-
-                                    <h3 class="mb-0"><a href="#"><?php echo htmlspecialchars($row['title']); ?></a></h3>
-                                    <p><strong>Harga: </strong>Rp<?php echo number_format($row['price'], 2, ',', '.'); ?></p>
+                                    <h3 class="mb-0">
+                                        <a href="#" class="text-dark" data-toggle="modal" data-target="#bookModal<?php echo $row['book_id']; ?>">
+                                            <?php echo htmlspecialchars($row['title']); ?>
+                                        </a>
+                                    </h3>
+                                    <p><strong>Kategori: </strong><?php echo htmlspecialchars($row['category']); ?></p>
                                 </div>
                             </div>
 
-
-                            <!-- Modal untuk detail bab buku -->
-                            <div class="modal fade" id="chapterModal<?php echo $row['chapter_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="chapterModalLabel<?php echo $row['chapter_id']; ?>" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
+                            <!-- Modal untuk detail buku -->
+                            <div class="modal fade" id="bookModal<?php echo $row['book_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="bookModalLabel<?php echo $row['book_id']; ?>" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="chapterModalLabel<?php echo $row['chapter_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></h5>
+                                            <h5 class="modal-title" id="bookModalLabel<?php echo $row['book_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Image" class="img-fluid mb-3">
-                                            <p><strong>Deskripsi:</strong></p>
-                                            <p><?php echo nl2br(htmlspecialchars($row['description'])); ?></p>
-                                            <p><strong>Harga:</strong> Rp <?php echo number_format($row['price'], 2, ',', '.'); ?></p>
-                                            <p><strong>Dibuat pada:</strong> <?php echo date("d M Y", strtotime($row['created_at'])); ?></p>
+                                            <h6>Bab Buku:</h6>
+                                            <?php if (!empty($chapters[$row['book_id']])): ?>
+                                                <ul>
+                                                    <?php foreach ($chapters[$row['book_id']] as $chapter): ?>
+                                                        <li>
+                                                            <strong><?php echo htmlspecialchars($chapter['title']); ?></strong><br>
+                                                            Deskripsi: <?php echo htmlspecialchars($chapter['description']); ?><br>
+                                                            Harga: Rp<?php echo number_format($chapter['price'], 2, ',', '.'); ?><br>
+                                                            <a href="checkout.php?chapter_id=<?php echo $chapter['chapter_id']; ?>" class="btn btn-primary btn-sm mt-2">Checkout</a>
+                                                        </li>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            <?php else: ?>
+                                                <p>Tidak ada bab yang tersedia untuk buku ini.</p>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="modal-footer">
-                                            <a href="checkout.php?chapter_id=<?php echo $row['chapter_id']; ?>" class="btn btn-primary">Checkout</a>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <p class="text-center">Tidak ada bab buku yang tersedia saat ini.</p>
+                        <p class="text-center">Tidak ada buku yang tersedia saat ini.</p>
                     <?php endif; ?>
                 </div>
             </div>
