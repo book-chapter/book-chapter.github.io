@@ -1,3 +1,13 @@
+<?php
+
+session_start();
+if (!isset($_SESSION['admin_logged_in'])) {
+  header('Location: index.php');
+  exit();
+}
+
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -104,17 +114,10 @@
                   <div class="message-body">
                     <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
                       <i class="ti ti-user fs-6"></i>
-                      <p class="mb-0 fs-3">My Profile</p>
+                      <!-- Menampilkan nama admin dari session -->
+                      <p class="mb-0 fs-3"><?php echo isset($_SESSION['admin_full_name']) ? $_SESSION['admin_full_name'] : 'Admin'; ?></p>
                     </a>
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="ti ti-mail fs-6"></i>
-                      <p class="mb-0 fs-3">My Account</p>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                      <i class="ti ti-list-check fs-6"></i>
-                      <p class="mb-0 fs-3">My Task</p>
-                    </a>
-                    <a href="index.php" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                    <a href="logout.php" onclick="confirmLogout(event)" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
                   </div>
                 </div>
               </li>
@@ -122,6 +125,7 @@
           </div>
         </nav>
       </header>
+
       <!--  Header End -->
       <div class="container-fluid">
         <!--  Row 1 -->
@@ -486,6 +490,19 @@
       </div>
     </div>
   </div>
+  <script>
+    function confirmLogout(event) {
+      // Mencegah aksi default tombol
+      event.preventDefault();
+
+      // Tampilkan konfirmasi
+      if (confirm("Apakah Anda yakin ingin logout?")) {
+        // Jika OK ditekan, arahkan ke logout.php
+        window.location.href = 'logout.php';
+      }
+      // Jika Cancel ditekan, tidak melakukan apa-apa
+    }
+  </script>
   <script src="../src/assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../src/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../src/assets/js/sidebarmenu.js"></script>
