@@ -23,16 +23,17 @@
                 <a href="dashboard.php" class="text-nowrap logo-img text-center d-block py-3 w-100">
                   <img src="../src/assets/images/logos/logoadmin.svg" width="220" alt="" />
                 </a>
-                <form>
+                <form action="login_process.php" method="POST">
                   <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Username</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" id="username" required>
                   </div>
                   <div class="mb-4">
-                    <label for="exampleInputPassword1" class="form-label">Kata Sandi</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1">
+                    <label for="password" class="form-label">Kata Sandi</label>
+                    <input type="password" name="password" class="form-control" id="password" required>
                   </div>
-                  <a href="dashboard.php" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Masuk</a>
+                  <button type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Masuk</button>
+                  <!-- <a href="dashboard.php" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">Masuk</a> -->
                 </form>
               </div>
             </div>
