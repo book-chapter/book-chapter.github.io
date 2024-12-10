@@ -172,6 +172,14 @@ $book_count = $conn->query("SELECT COUNT(*) as total_book FROM chapters")->fetch
               </a>
             </li>
             <li class="sidebar-item">
+              <a class="sidebar-link" href="category-chapter.php" aria-expanded="false">
+                <span>
+                  <i class="ti ti-category"></i>
+                </span>
+                <span class="hide-menu">Kategori Buku</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
               <a class="sidebar-link" href="payment.php" aria-expanded="false">
                 <span>
                   <i class="ti ti-credit-card"></i>

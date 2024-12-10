@@ -19,35 +19,93 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-// Proses verifikasi pembayaran
+// Proses form input
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $order_id = $_POST['order_id'];
   $action = $_POST['action'];
-  $status = ($action == 'approve') ? 'approved' : 'rejected';
 
-  $sql = "UPDATE orders SET status = '$status' WHERE order_id = '$order_id'";
-  if ($conn->query($sql) === TRUE) {
-    header("Location: payment.php");
-  } else {
-    echo "Error updating order: " . $conn->error;
+  if ($action == 'add') {
+    $title = $_POST['title'];
+    $description = $_POST['description'];
+    $price = $_POST['price'];
+
+    // Validasi input
+    if (empty($title) || empty($description) || empty($price)) {
+      $_SESSION['error'] = "Semua field wajib diisi!";
+      header("Location: book-chapter.php");
+      exit;
+    }
+
+    // Mengupload file .docx
+    $file_name = str_replace(' ', '_', basename($_FILES['chapter_file']['name'])); // Ganti spasi dengan _
+    $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+    // Validasi tipe file
+    $allowed_types = ['docx'];
+    if (in_array($file_type, $allowed_types)) {
+      $upload_dir = '../uploads/chapters/';
+      if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+
+      $file_path = $upload_dir . $file_name;
+
+      if (move_uploaded_file($_FILES['chapter_file']['tmp_name'], $file_path)) {
+        // Mengupload gambar
+        $image_name = str_replace(' ', '_', basename($_FILES['image_path']['name']));
+        $image_dir = '../uploads/images/';
+        if (!is_dir($image_dir)) mkdir($image_dir, 0777, true);
+
+        $image_path = $image_dir . $image_name;
+
+        if (move_uploaded_file($_FILES['image_path']['tmp_name'], $image_path)) {
+          // Path yang disimpan ke database
+          $file_path_db = 'uploads/chapters/' . $file_name;
+          $image_path_db = 'uploads/images/' . $image_name;
+
+          // Simpan ke database
+          $stmt = $conn->prepare("INSERT INTO chapters (title, description, price, file_path, image_path) VALUES (?, ?, ?, ?, ?)");
+          $stmt->bind_param("ssdss", $title, $description, $price, $file_path_db, $image_path_db);
+
+          if ($stmt->execute()) {
+            $_SESSION['success'] = "Bab buku berhasil ditambahkan!";
+          } else {
+            $_SESSION['error'] = "Error: " . $stmt->error;
+          }
+          $stmt->close();
+        } else {
+          $_SESSION['error'] = "Gagal mengunggah gambar. Pastikan folder memiliki izin tulis.";
+        }
+      } else {
+        $_SESSION['error'] = "Gagal mengunggah file bab buku. Pastikan folder memiliki izin tulis.";
+      }
+    } else {
+      $_SESSION['error'] = "Hanya file DOCX yang diperbolehkan untuk bab buku.";
+    }
+
+    header("Location: book-chapter.php");
+    exit;
+  } elseif ($action == 'delete') {
+    $chapter_id = $_POST['chapter_id'];
+    $stmt = $conn->prepare("DELETE FROM chapters WHERE chapter_id = ?");
+    $stmt->bind_param("i", $chapter_id);
+    if ($stmt->execute()) {
+      $_SESSION['success'] = "Bab buku berhasil dihapus!";
+    } else {
+      $_SESSION['error'] = "Error: " . $stmt->error;
+    }
+    $stmt->close();
+
+    header("Location: book-chapter.php");
+    exit;
   }
 }
 
-// Query untuk pembayaran dalam status waiting_confirmation
-$sql_waiting = "SELECT orders.order_id, users.username, chapters.title, orders.order_date, orders.payment_proof_path, orders.status 
-                FROM orders 
-                JOIN users ON orders.user_id = users.user_id 
-                JOIN chapters ON orders.chapter_id = chapters.chapter_id 
-                WHERE orders.status = 'waiting_confirmation'";
-$result_waiting = $conn->query($sql_waiting);
+// Query untuk menampilkan daftar chapters
+$book_details = $conn->query("SELECT * FROM book_details");
+if (!$book_details) {
+  die("Error: " . $conn->error);
+}
 
-// Query untuk riwayat pembayaran (approved/rejected)
-$sql_history = "SELECT orders.order_id, users.username, chapters.title, orders.order_date, orders.payment_proof_path, orders.status 
-                FROM orders 
-                JOIN users ON orders.user_id = users.user_id 
-                JOIN chapters ON orders.chapter_id = chapters.chapter_id 
-                WHERE orders.status IN ('approved', 'rejected')";
-$result_history = $conn->query($sql_history);
+// Hitung jumlah bab
+$category_count = $conn->query("SELECT COUNT(*) as total_category FROM book_details")->fetch_assoc()['total_category'] ?? 0;
 
 ?>
 
@@ -58,7 +116,7 @@ $result_history = $conn->query($sql_history);
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Modernize Free</title>
-  <link rel="shortcut icon" type="image/png" href="../src/assets/images/logos/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="../src/assets/images/logos/logo_bc.png" />
   <link rel="stylesheet" href="../src/assets/css/styles.min.css" />
 </head>
 
@@ -168,91 +226,58 @@ $result_history = $conn->query($sql_history);
         <div class="container-fluid">
           <div class="card">
             <div class="card-body">
-              <div class="col-12">
-                <h4 class="card-title fw-semibold mb-3">Verifikasi Pembayaran Buku</h4><br>
-                <div class="card">
-                  <div class="card-body p-4">
-                    <?php if ($result_waiting->num_rows > 0): ?>
-                      <table class="table">
-                        <thead>
+              <h4 class="card-title fw-semibold mb-3">Kategori Buku</h4><br>
+              <div class="card">
+                <div class="card-body p-4">
+                  <h5 class="card-title">Jumlah Kategori</h5>
+                  <p class="card-text">Total Kategori: <?php echo $category_count; ?></p>
+                </div>
+              </div><br>
+              <h4 class="card-title fw-semibold mb-3">Form Input Kategori Buku</h4>
+              <div class="card">
+                <div class="card-body p-3">
+                  <form method="POST" enctype="multipart/form-data">
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="title" name="title" placeholder="judul">
+                      <label for="floatingInput">Judul</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="category" name="category" placeholder="kategori">
+                      <label for="floatingInput">Kategori</label>
+                    </div><br>
+                    <button type="submit" class="btn btn-primary" name="action" value="add">Tambah Kategori</button>
+                  </form>
+                </div>
+              </div>
+              <h4 class="card-title fw-semibold mb-3">Daftar Bab Buku</h4>
+              <div class="card">
+                <div class="card-body p-2">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">Kategori</th>
+                          <th scope="col">Judul Buku</th>
+                          <th scope="col">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php while ($book_detail = $book_details->fetch_assoc()): ?>
                           <tr>
-                            <th>Order ID</th>
-                            <th>Username</th>
-                            <th>Chapter Title</th>
-                            <th>Order Date</th>
-                            <th>Payment Proof</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <td><?= $book_detail['id'] ?></td>
+                            <td><?= htmlspecialchars($book_detail['title']) ?></td>
+                            <td><?= htmlspecialchars($book_detail['category']) ?></td>
+                            <td>
+                              <form method="POST" style="display:inline;">
+                                <input type="hidden" name="chapter_id" value="<?= $chapter['id'] ?>">
+                                <button type="submit" name="action" value="delete" onclick="return confirm('Yakin ingin menghapus user ini?');" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Hapus</button>
+                              </form>
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          <?php while ($row = $result_waiting->fetch_assoc()): ?>
-                            <tr>
-                              <td><?= $row['order_id'] ?></td>
-                              <td><?= htmlspecialchars($row['username']) ?></td>
-                              <td><?= htmlspecialchars($row['title']) ?></td>
-                              <td><?= $row['order_date'] ?></td>
-                              <td>
-                                <?php if (file_exists('../' . $row['payment_proof_path'])): ?>
-                                  <a href="../<?= htmlspecialchars($row['payment_proof_path']) ?>" target="_blank">View Proof</a>
-                                <?php else: ?>
-                                  <span style="color: red;">Proof Not Found</span>
-                                <?php endif; ?>
-                              </td>
-                              <td><?= $row['status'] ?></td>
-                              <td>
-                                <form method="POST">
-                                  <input type="hidden" name="order_id" value="<?= $row['order_id'] ?>">
-                                  <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
-                                  <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
-                                </form>
-                              </td>
-                            </tr>
-                          <?php endwhile; ?>
-                        </tbody>
-                      </table>
-                    <?php else: ?>
-                      <p>Tidak ada pembayaran yang perlu diverifikasi.</p>
-                    <?php endif; ?>
-                  </div>
-                </div><br>
-                <h4 class="card-title fw-semibold mb-3">Riwayat Pembelian Buku</h4><br>
-                <div class="card mb-0">
-                  <div class="card-body p-4">
-                    <?php if ($result_history->num_rows > 0): ?>
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>Order ID</th>
-                            <th>Username</th>
-                            <th>Chapter Title</th>
-                            <th>Order Date</th>
-                            <th>Payment Proof</th>
-                            <th>Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <?php while ($row = $result_history->fetch_assoc()): ?>
-                            <tr>
-                              <td><?= $row['order_id'] ?></td>
-                              <td><?= htmlspecialchars($row['username']) ?></td>
-                              <td><?= htmlspecialchars($row['title']) ?></td>
-                              <td><?= $row['order_date'] ?></td>
-                              <td>
-                                <?php if (file_exists('../' . $row['payment_proof_path'])): ?>
-                                  <a href="../<?= htmlspecialchars($row['payment_proof_path']) ?>" target="_blank">View Proof</a>
-                                <?php else: ?>
-                                  <span style="color: red;">Proof Not Found</span>
-                                <?php endif; ?>
-                              </td>
-                              <td><?= $row['status'] ?></td>
-                            </tr>
-                          <?php endwhile; ?>
-                        </tbody>
-                      </table>
-                    <?php else: ?>
-                      <p>Tidak ada riwayat pembelian.</p>
-                    <?php endif; ?>
+                        <?php endwhile; ?>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
