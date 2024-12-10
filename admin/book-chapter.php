@@ -248,7 +248,13 @@ $book_count = $conn->query("SELECT COUNT(*) as total_book FROM chapters")->fetch
                     <div class="mb-3">
                       <label for="chapter_file">File Gambar Cover Bab (.jpg, .png):</label>
                       <input class="form-control" type="file" id="image_path" name="image_path">
-                    </div><br>
+                    </div>
+                    <select class="form-select" aria-label="Default select example">
+                      <option selected>Kategori Buku</option>
+                      <option value="1">TI</option>
+                      <option value="2">Sastra</option>
+                      <option value="3">Teknik</option>
+                    </select><br>
                     <button type="submit" class="btn btn-primary" name="action" value="add">Tambah Bab</button>
                   </form>
                 </div>
