@@ -204,7 +204,7 @@ if ($users === false) {
                             <form method="POST" style="display:inline;">
                               <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
                               <input type="hidden" name="action" value="delete">
-                              <button type="submit" class="btn btn-primary" onclick="return confirm('Yakin ingin menghapus user ini?');">Hapus</button>
+                              <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus user ini?');">Hapus</button>
                             </form>
                           </td>
                         </tr>

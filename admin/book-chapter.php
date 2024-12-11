@@ -11,7 +11,6 @@ $username = "root";
 $password = ""; // Ganti dengan password MySQL Anda
 $dbname = "book_chapter"; // Nama database
 
-// Membuat koneksi
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Cek koneksi
@@ -27,58 +26,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
     $description = $_POST['description'];
     $price = $_POST['price'];
+    $category_id = $_POST['category_id'];
 
     // Validasi input
-    if (empty($title) || empty($description) || empty($price)) {
+    if (empty($title) || empty($description) || empty($price) || empty($category_id)) {
       $_SESSION['error'] = "Semua field wajib diisi!";
       header("Location: book-chapter.php");
       exit;
     }
 
     // Mengupload file .docx
-    $file_name = str_replace(' ', '_', basename($_FILES['chapter_file']['name'])); // Ganti spasi dengan _
+    $file_name = str_replace(' ', '_', basename($_FILES['chapter_file']['name']));
     $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-
-    // Validasi tipe file
     $allowed_types = ['docx'];
-    if (in_array($file_type, $allowed_types)) {
-      $upload_dir = '../uploads/chapters/';
-      if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-
-      $file_path = $upload_dir . $file_name;
-
-      if (move_uploaded_file($_FILES['chapter_file']['tmp_name'], $file_path)) {
-        // Mengupload gambar
-        $image_name = str_replace(' ', '_', basename($_FILES['image_path']['name']));
-        $image_dir = '../uploads/images/';
-        if (!is_dir($image_dir)) mkdir($image_dir, 0777, true);
-
-        $image_path = $image_dir . $image_name;
-
-        if (move_uploaded_file($_FILES['image_path']['tmp_name'], $image_path)) {
-          // Path yang disimpan ke database
-          $file_path_db = 'uploads/chapters/' . $file_name;
-          $image_path_db = 'uploads/images/' . $image_name;
-
-          // Simpan ke database
-          $stmt = $conn->prepare("INSERT INTO chapters (title, description, price, file_path, image_path) VALUES (?, ?, ?, ?, ?)");
-          $stmt->bind_param("ssdss", $title, $description, $price, $file_path_db, $image_path_db);
-
-          if ($stmt->execute()) {
-            $_SESSION['success'] = "Bab buku berhasil ditambahkan!";
-          } else {
-            $_SESSION['error'] = "Error: " . $stmt->error;
-          }
-          $stmt->close();
-        } else {
-          $_SESSION['error'] = "Gagal mengunggah gambar. Pastikan folder memiliki izin tulis.";
-        }
-      } else {
-        $_SESSION['error'] = "Gagal mengunggah file bab buku. Pastikan folder memiliki izin tulis.";
-      }
-    } else {
-      $_SESSION['error'] = "Hanya file DOCX yang diperbolehkan untuk bab buku.";
+    if (!in_array($file_type, $allowed_types)) {
+      $_SESSION['error'] = "Hanya file DOCX yang diperbolehkan.";
+      header("Location: book-chapter.php");
+      exit;
     }
+
+    $upload_dir = '../uploads/chapters/';
+    if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+
+    $file_path = $upload_dir . $file_name;
+    if (!move_uploaded_file($_FILES['chapter_file']['tmp_name'], $file_path)) {
+      $_SESSION['error'] = "Gagal mengunggah file bab buku.";
+      header("Location: book-chapter.php");
+      exit;
+    }
+
+    // Path file yang disimpan ke database
+    $file_path_db = 'uploads/chapters/' . $file_name;
+
+    // Simpan ke database
+    $stmt = $conn->prepare("INSERT INTO chapters (book_id, title, description, price, file_path) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("issds", $category_id, $title, $description, $price, $file_path_db);
+
+    if ($stmt->execute()) {
+      $_SESSION['success'] = "Bab buku berhasil ditambahkan!";
+    } else {
+      $_SESSION['error'] = "Error: " . $stmt->error;
+    }
+    $stmt->close();
 
     header("Location: book-chapter.php");
     exit;
@@ -98,15 +87,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 
-// Query untuk menampilkan daftar chapters
-$chapters = $conn->query("SELECT * FROM chapters");
+// Query untuk kategori buku
+$categories = $conn->query("SELECT id, title FROM book_details");
+if (!$categories) {
+  die("Error: " . $conn->error);
+}
+
+// Query untuk daftar bab buku
+$chapters = $conn->query("SELECT chapters.*, book_details.title AS category_title FROM chapters LEFT JOIN book_details ON chapters.book_id = book_details.id");
 if (!$chapters) {
   die("Error: " . $conn->error);
 }
 
-// Hitung jumlah bab
+// Hitung jumlah bab buku
 $book_count = $conn->query("SELECT COUNT(*) as total_book FROM chapters")->fetch_assoc()['total_book'] ?? 0;
-
 ?>
 
 <!doctype html>
@@ -237,32 +231,31 @@ $book_count = $conn->query("SELECT COUNT(*) as total_book FROM chapters")->fetch
               <div class="card">
                 <div class="card-body p-3">
                   <form method="POST" enctype="multipart/form-data">
-                    <div class="form-floating mb-3">
-                      <input type="text" class="form-control" id="title" name="title" placeholder="name@example.com">
-                      <label for="floatingInput">Judul Bab Buku</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                      <textarea id="description" class="form-control" name="description" rows="4" placeholder="name@example.com"></textarea>
-                      <label for="floatingPassword">Deskripsi</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                      <input type="number" class="form-control" id="price" name="price" placeholder="Password">
-                      <label for="floatingPassword">Harga</label>
+                    <div class="mb-3">
+                      <label for="title">Judul Bab Buku</label>
+                      <input type="text" class="form-control" id="title" name="title" placeholder="Judul Bab Buku" required>
                     </div>
                     <div class="mb-3">
-                      <label for="chapter_file">File Bab (.docx):</label>
-                      <input class="form-control" type="file" id="chapter_file" name="chapter_file">
+                      <label for="description">Deskripsi</label>
+                      <textarea class="form-control" id="description" name="description" rows="3" placeholder="Deskripsi" required></textarea>
                     </div>
                     <div class="mb-3">
-                      <label for="chapter_file">File Gambar Cover Bab (.jpg, .png):</label>
-                      <input class="form-control" type="file" id="image_path" name="image_path">
+                      <label for="price">Harga</label>
+                      <input type="number" class="form-control" id="price" name="price" placeholder="Harga" required>
                     </div>
-                    <select class="form-select" aria-label="Default select example">
-                      <option selected>Kategori Buku</option>
-                      <option value="1">TI</option>
-                      <option value="2">Sastra</option>
-                      <option value="3">Teknik</option>
-                    </select><br>
+                    <div class="mb-3">
+                      <label for="chapter_file">File Bab (.docx)</label>
+                      <input type="file" class="form-control" id="chapter_file" name="chapter_file" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="category_id">Pilih Judul Buku</label>
+                      <select class="form-select" id="category_id" name="category_id" required>
+                        <option value="">Judul Buku</option>
+                        <?php while ($category = $categories->fetch_assoc()): ?>
+                          <option value="<?= $category['id'] ?>"><?= htmlspecialchars($category['title']) ?></option>
+                        <?php endwhile; ?>
+                      </select>
+                    </div>
                     <button type="submit" class="btn btn-primary" name="action" value="add">Tambah Bab</button>
                   </form>
                 </div>
@@ -274,34 +267,28 @@ $book_count = $conn->query("SELECT COUNT(*) as total_book FROM chapters")->fetch
                     <table class="table">
                       <thead>
                         <tr>
-                          <th scope="col">ID</th>
-                          <th scope="col">Judul</th>
-                          <th scope="col">Deskripsi</th>
-                          <th scope="col">Harga</th>
-                          <th scope="col">File</th>
-                          <th scope="col">Gambar</th>
-                          <th scope="col">Aksi</th>
+                          <th>ID</th>
+                          <th>Judul Buku</th>
+                          <th>Bab Buku</th>
+                          <th>Deskripsi Bab Buku</th>
+                          <th>Harga</th>
+                          <th>File</th>
+                          <th>Aksi</th>
                         </tr>
                       </thead>
                       <tbody>
                         <?php while ($chapter = $chapters->fetch_assoc()): ?>
                           <tr>
                             <td><?= $chapter['chapter_id'] ?></td>
+                            <td><?= htmlspecialchars($chapter['category_title']) ?></td>
                             <td><?= htmlspecialchars($chapter['title']) ?></td>
                             <td><?= htmlspecialchars($chapter['description']) ?></td>
                             <td>Rp<?= number_format($chapter['price'], 2, ',', '.') ?></td>
-                            <td><a href="../<?= $chapter['file_path'] ?>" download>Unduh</a></td>
-                            <td>
-                              <?php if (file_exists('../' . $chapter['image_path'])) : ?>
-                                <img src="../<?= htmlspecialchars($chapter['image_path']) ?>" alt="Gambar Bab" style="width: 100px;">
-                              <?php else : ?>
-                                Tidak ada gambar
-                              <?php endif; ?>
-                            </td>
+                            <td><a href="../<?= htmlspecialchars($chapter['file_path']) ?>" download>Unduh</a></td>
                             <td>
                               <form method="POST" style="display:inline;">
                                 <input type="hidden" name="chapter_id" value="<?= $chapter['chapter_id'] ?>">
-                                <button type="submit" name="action" value="delete" onclick="return confirm('Yakin ingin menghapus user ini?');" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Hapus</button>
+                                <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus kategori ini?')">Hapus</button>
                               </form>
                             </td>
                           </tr>

@@ -1,4 +1,16 @@
 <?php
+
+session_start();
+include 'db.php';
+
+// Cek jika pengguna belum login, arahkan ke login.html
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.html");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
 // Database connection
 $servername = "localhost";
 $username = "root";
@@ -12,13 +24,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Query untuk data buku
-$sqlBooks = "SELECT id AS book_id, title, category FROM book_details ORDER BY category, title ASC";
+// Query untuk data buku, termasuk gambar
+$sqlBooks = "SELECT id AS book_id, title, category, description, image_path FROM book_details ORDER BY category, title ASC";
 $resultBooks = $conn->query($sqlBooks);
 if (!$resultBooks) {
     die("Error in SQL Query (Books): " . $conn->error);
 }
-
 
 // Query untuk data bab buku
 $sqlChapters = "SELECT * FROM chapters";
@@ -26,7 +37,6 @@ $resultChapters = $conn->query($sqlChapters);
 if (!$resultChapters) {
     die("Error in SQL Query (Chapters): " . $conn->error);
 }
-
 
 // Kelompokkan bab buku berdasarkan book_id
 $chapters = [];
@@ -70,7 +80,82 @@ if ($resultChapters->num_rows > 0) {
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <style>
+        /* Pastikan elemen di baris sejajar vertikal */
+        form .row.g-3>div {
+            display: flex;
+            align-items: center;
+            /* Sejajarkan elemen secara vertikal */
+        }
 
+        /* Pastikan tombol, dropdown, dan input memiliki tinggi yang sama */
+        form .form-control,
+        form .btn {
+            height: calc(2.875rem + 2px);
+            /* Samakan tinggi */
+            font-size: 1rem;
+            /* Ukuran teks seragam */
+            padding: 0.375rem 0.75rem;
+            /* Padding seragam */
+        }
+
+
+        /* Pastikan border input dan ikon menyatu */
+        .input-group {
+            display: flex;
+            /* Pastikan elemen dalam input-group sejajar */
+            width: 100%;
+            /* Input group menggunakan 100% lebar */
+        }
+
+        .input-group .form-control {
+            border-radius: 50px 0 0 50px;
+            /* Membulatkan sisi kiri */
+            border-right: none;
+            /* Hilangkan border kanan */
+            flex: 1;
+            /* Pastikan input mengambil ruang penuh */
+        }
+
+        .input-group .input-group-text {
+            border-radius: 0 50px 50px 0;
+            /* Membulatkan sisi kanan */
+            background-color: #f8f9fa;
+            /* Warna latar belakang */
+            border-left: none;
+            /* Hilangkan border kiri */
+            height: calc(2.875rem + 2px);
+            /* Samakan tinggi */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            /* Padding untuk ikon */
+        }
+
+        /* Pastikan elemen input group berada dalam baris */
+        .row.g-3 .input-group {
+            width: 100%;
+            /* Input group mengikuti lebar kontainernya */
+        }
+
+        /* Hover efek untuk ikon */
+        .input-group .input-group-text:hover i {
+            color: #007bff;
+            /* Warna ikon saat hover */
+        }
+
+
+        /* Responsivitas */
+        @media (max-width: 576px) {
+
+            .input-group .form-control,
+            .input-group .input-group-text {
+                height: calc(2.5rem + 2px);
+                /* Sesuaikan untuk layar kecil */
+            }
+        }
+    </style>
 
 </head>
 
@@ -122,7 +207,7 @@ if ($resultChapters->num_rows > 0) {
                     <div class="site-logo">
                         <a href="dashboard.php" class="d-block">BookChapter.</a>
                     </div>
-                    
+
                     <!-- Navigation (for Desktop and Mobile) -->
                     <div class="mr-auto">
                         <!-- Navbar for mobile devices -->
@@ -154,7 +239,7 @@ if ($resultChapters->num_rows > 0) {
                             </div>
                         </nav>
                     </div>
-                    
+
                     <!-- User Account Menu (for logged-in users) -->
                     <div class="ml-auto">
                         <!-- <div class="">
@@ -179,6 +264,102 @@ if ($resultChapters->num_rows > 0) {
                 </div>
             </div>
         </div>
+
+        <div class="container mt-5">
+            <h1 class="text-center">Daftar Buku</h1>
+            <p class="text-center">Pilih kategori atau cari berdasarkan judul buku.</p><br>
+
+            <!-- Form Search -->
+            <form method="GET" action="dashboard_bab_buku.php" class="mb-4" id="search-form">
+                <div class="row g-3 align-items-center justify-content-center">
+                    <!-- Dropdown Kategori -->
+                    <div class="col-md-4 col-sm-12">
+                        <select name="category" id="category" class="form-control form-control-lg">
+                            <option value="">Semua Kategori</option>
+                            <option value="1">TI</option>
+                            <option value="2">Sastra</option>
+                            <option value="3">Novel</option>
+                        </select>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="col-md-8 col-sm-12">
+                        <div class="input-group">
+                            <input type="text" id="search" name="search" class="form-control form-control-lg" placeholder="Cari judul buku..." aria-label="Search">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><br><br>
+
+        <div class="site-section pb-0">
+            <div class="container">
+                <div class="row">
+                    <?php if ($resultBooks->num_rows > 0): ?>
+                        <?php while ($row = $resultBooks->fetch_assoc()): ?>
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <!-- Gambar Buku -->
+                                            <img src="<?php echo htmlspecialchars($row['image_path']); ?>" class="img-fluid rounded-start" alt="Gambar Buku">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><?php echo htmlspecialchars($row['title']); ?></h5>
+                                                <p class="card-text"><strong>Kategori: </strong><?php echo htmlspecialchars($row['category']); ?></p>
+                                                <p class="card-text"><strong>Deskripsi: </strong><?php echo htmlspecialchars($row['description']); ?></p>
+                                                <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#bookModal<?php echo $row['book_id']; ?>">Detail</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal untuk Detail Buku -->
+                            <div class="modal fade" id="bookModal<?php echo $row['book_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="bookModalLabel<?php echo $row['book_id']; ?>" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="bookModalLabel<?php echo $row['book_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h6>Bab Buku:</h6>
+                                            <?php if (!empty($chapters[$row['book_id']])): ?>
+                                                <ul>
+                                                    <?php foreach ($chapters[$row['book_id']] as $chapter): ?>
+                                                        <li>
+                                                            <strong><?php echo htmlspecialchars($chapter['title']); ?></strong><br>
+                                                            Deskripsi: <?php echo htmlspecialchars($chapter['description']); ?><br>
+                                                            Harga: Rp<?php echo number_format($chapter['price'], 2, ',', '.'); ?><br>
+                                                            <a href="checkout.php?chapter_id=<?php echo $chapter['chapter_id']; ?>" class="btn btn-primary btn-sm mt-2">Checkout</a>
+                                                        </li>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            <?php else: ?>
+                                                <p>Tidak ada bab yang tersedia untuk buku ini.</p>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="text-center">Tidak ada buku yang tersedia saat ini.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
 
         <div class="site-section pb-0">
             <div class="container">
